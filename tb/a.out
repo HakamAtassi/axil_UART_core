@@ -1,0 +1,199 @@
+#! /usr/bin/vvp
+:ivl_version "11.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision + 0;
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/system.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2005_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/va_math.vpi";
+S_0x55e1c0d09d20 .scope module, "AXI_UART" "AXI_UART" 2 3;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "S_AXI_ACLK";
+    .port_info 1 /INPUT 1 "S_AXI_ARESETN";
+    .port_info 2 /OUTPUT 1 "Interrupt";
+    .port_info 3 /INPUT 4 "S_AXI_AWADDR";
+    .port_info 4 /INPUT 1 "S_AXI_AWVALID";
+    .port_info 5 /OUTPUT 1 "S_AXI_AWREADY";
+    .port_info 6 /INPUT 32 "S_AXI_WDATA";
+    .port_info 7 /INPUT 4 "S_AXI_WSTB";
+    .port_info 8 /INPUT 1 "S_AXI_WAVLID";
+    .port_info 9 /OUTPUT 1 "S_AXI_WREADY";
+    .port_info 10 /OUTPUT 2 "S_AXI_BRESP";
+    .port_info 11 /OUTPUT 1 "S_AXI_BVALID";
+    .port_info 12 /INPUT 1 "S_AXI_BREADY";
+    .port_info 13 /INPUT 4 "S_AXI_ARADDR";
+    .port_info 14 /INPUT 1 "S_AXI_ARVALID";
+    .port_info 15 /OUTPUT 1 "S_AXI_ARREADY";
+    .port_info 16 /OUTPUT 4 "S_AXI_RDATA";
+    .port_info 17 /OUTPUT 2 "S_AXI_RRESP";
+    .port_info 18 /OUTPUT 1 "S_AXI_RVALID";
+    .port_info 19 /INPUT 1 "S_AXI_RREADY";
+    .port_info 20 /INPUT 1 "RX";
+    .port_info 21 /OUTPUT 1 "TX";
+P_0x55e1c0d09eb0 .param/l "C_BAUDRATE" 0 2 13, +C4<00000000000000000010010110000000>;
+P_0x55e1c0d09ef0 .param/l "C_DATA_BITS" 0 2 14, +C4<00000000000000000000000000001000>;
+P_0x55e1c0d09f30 .param/str "C_FAMILY" 0 2 6, "virtex6";
+P_0x55e1c0d09f70 .param/l "C_ODD_PARITY" 0 2 16, +C4<00000000000000000000000000000000>;
+P_0x55e1c0d09fb0 .param/l "C_S_AXI_ACLK_FREQ_HZ" 0 2 7, +C4<00000101111101011110000100000000>;
+P_0x55e1c0d09ff0 .param/l "C_S_AXI_ADDR_WIDTH" 0 2 9, +C4<00000000000000000000000000000100>;
+P_0x55e1c0d0a030 .param/l "C_S_AXI_DATA_WIDTH" 0 2 10, +C4<00000000000000000000000000100000>;
+P_0x55e1c0d0a070 .param/str "C_S_AXI_PROTOCOL" 0 2 11, "AXI4LITE";
+P_0x55e1c0d0a0b0 .param/l "C_USE_PARITY" 0 2 15, +C4<00000000000000000000000000000000>;
+v0x55e1c0d49df0_0 .var "Interrupt", 0 0;
+o0x7fc0ae83a048 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d36070_0 .net "RX", 0 0, o0x7fc0ae83a048;  0 drivers
+o0x7fc0ae83a078 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d636e0_0 .net "S_AXI_ACLK", 0 0, o0x7fc0ae83a078;  0 drivers
+o0x7fc0ae83a0a8 .functor BUFZ 4, C4<zzzz>; HiZ drive
+v0x55e1c0d637b0_0 .net "S_AXI_ARADDR", 3 0, o0x7fc0ae83a0a8;  0 drivers
+o0x7fc0ae83a0d8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d63890_0 .net "S_AXI_ARESETN", 0 0, o0x7fc0ae83a0d8;  0 drivers
+v0x55e1c0d639a0_0 .var "S_AXI_ARREADY", 0 0;
+o0x7fc0ae83a138 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d63a60_0 .net "S_AXI_ARVALID", 0 0, o0x7fc0ae83a138;  0 drivers
+o0x7fc0ae83a168 .functor BUFZ 4, C4<zzzz>; HiZ drive
+v0x55e1c0d63b20_0 .net "S_AXI_AWADDR", 3 0, o0x7fc0ae83a168;  0 drivers
+v0x55e1c0d63c00_0 .var "S_AXI_AWREADY", 0 0;
+o0x7fc0ae83a1c8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d63cc0_0 .net "S_AXI_AWVALID", 0 0, o0x7fc0ae83a1c8;  0 drivers
+o0x7fc0ae83a1f8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d63d80_0 .net "S_AXI_BREADY", 0 0, o0x7fc0ae83a1f8;  0 drivers
+v0x55e1c0d63e40_0 .var "S_AXI_BRESP", 1 0;
+v0x55e1c0d63f20_0 .var "S_AXI_BVALID", 0 0;
+v0x55e1c0d63fe0_0 .var "S_AXI_RDATA", 3 0;
+o0x7fc0ae83a2b8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d640c0_0 .net "S_AXI_RREADY", 0 0, o0x7fc0ae83a2b8;  0 drivers
+v0x55e1c0d64180_0 .var "S_AXI_RRESP", 1 0;
+v0x55e1c0d64260_0 .var "S_AXI_RVALID", 0 0;
+o0x7fc0ae83a348 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d64430_0 .net "S_AXI_WAVLID", 0 0, o0x7fc0ae83a348;  0 drivers
+o0x7fc0ae83a378 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x55e1c0d644f0_0 .net "S_AXI_WDATA", 31 0, o0x7fc0ae83a378;  0 drivers
+v0x55e1c0d645d0_0 .var "S_AXI_WREADY", 0 0;
+o0x7fc0ae83a3d8 .functor BUFZ 4, C4<zzzz>; HiZ drive
+v0x55e1c0d64690_0 .net "S_AXI_WSTB", 3 0, o0x7fc0ae83a3d8;  0 drivers
+v0x55e1c0d64770_0 .var "TX", 0 0;
+E_0x55e1c0d4edf0 .event posedge, v0x55e1c0d636e0_0;
+S_0x55e1c0d457c0 .scope module, "axi_master" "axi_master" 3 2;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "clk";
+    .port_info 1 /INPUT 1 "reset_n";
+    .port_info 2 /OUTPUT 1 "M_AXIS_TVALID";
+    .port_info 3 /INPUT 1 "M_AXIS_TREADY";
+    .port_info 4 /OUTPUT 32 "M_AXIS_TDATA";
+    .port_info 5 /OUTPUT 1 "M_AXIS_TLAST";
+    .port_info 6 /OUTPUT 1 "M_AXIS_TID";
+    .port_info 7 /OUTPUT 1 "M_AXIS_TSTRB";
+    .port_info 8 /OUTPUT 1 "M_AXIS_TKEEP";
+    .port_info 9 /OUTPUT 1 "M_AXIS_TDEST";
+    .port_info 10 /OUTPUT 1 "M_AXIS_TUSER";
+v0x55e1c0d64bf0_0 .var "M_AXIS_TDATA", 31 0;
+v0x55e1c0d64cf0_0 .var "M_AXIS_TDEST", 0 0;
+v0x55e1c0d64db0_0 .var "M_AXIS_TID", 0 0;
+v0x55e1c0d64e50_0 .var "M_AXIS_TKEEP", 0 0;
+v0x55e1c0d64f10_0 .var "M_AXIS_TLAST", 0 0;
+o0x7fc0ae83a948 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d64fd0_0 .net "M_AXIS_TREADY", 0 0, o0x7fc0ae83a948;  0 drivers
+v0x55e1c0d65090_0 .var "M_AXIS_TSTRB", 0 0;
+v0x55e1c0d65150_0 .var "M_AXIS_TUSER", 0 0;
+v0x55e1c0d65210_0 .var "M_AXIS_TVALID", 0 0;
+o0x7fc0ae83aa08 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d652d0_0 .net "clk", 0 0, o0x7fc0ae83aa08;  0 drivers
+v0x55e1c0d65390_0 .var "next_valid_signal", 0 0;
+o0x7fc0ae83aa68 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d65450_0 .net "reset_n", 0 0, o0x7fc0ae83aa68;  0 drivers
+E_0x55e1c0d2d9b0 .event posedge, v0x55e1c0d652d0_0;
+S_0x55e1c0d48ce0 .scope module, "axi_slave" "axi_slave" 4 3;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "clk";
+    .port_info 1 /INPUT 1 "reset_n";
+    .port_info 2 /INPUT 1 "S_AXIS_TVALID";
+    .port_info 3 /INPUT 1 "S_AXIS_TREADY";
+    .port_info 4 /INPUT 32 "S_AXIS_TDATA";
+    .port_info 5 /INPUT 1 "S_AXIS_TLAST";
+    .port_info 6 /INPUT 1 "S_AXIS_TID";
+    .port_info 7 /INPUT 1 "S_AXIS_TSTRB";
+    .port_info 8 /INPUT 1 "S_AXIS_TKEEP";
+    .port_info 9 /INPUT 1 "S_AXIS_TDEST";
+    .port_info 10 /INPUT 1 "S_AXIS_TUSER";
+o0x7fc0ae83aca8 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x55e1c0d65710_0 .net "S_AXIS_TDATA", 31 0, o0x7fc0ae83aca8;  0 drivers
+o0x7fc0ae83acd8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d65810_0 .net "S_AXIS_TDEST", 0 0, o0x7fc0ae83acd8;  0 drivers
+o0x7fc0ae83ad08 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d658d0_0 .net "S_AXIS_TID", 0 0, o0x7fc0ae83ad08;  0 drivers
+o0x7fc0ae83ad38 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d65970_0 .net "S_AXIS_TKEEP", 0 0, o0x7fc0ae83ad38;  0 drivers
+o0x7fc0ae83ad68 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d65a30_0 .net "S_AXIS_TLAST", 0 0, o0x7fc0ae83ad68;  0 drivers
+o0x7fc0ae83ad98 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d65af0_0 .net "S_AXIS_TREADY", 0 0, o0x7fc0ae83ad98;  0 drivers
+o0x7fc0ae83adc8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d65bb0_0 .net "S_AXIS_TSTRB", 0 0, o0x7fc0ae83adc8;  0 drivers
+o0x7fc0ae83adf8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d65c70_0 .net "S_AXIS_TUSER", 0 0, o0x7fc0ae83adf8;  0 drivers
+o0x7fc0ae83ae28 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d65d30_0 .net "S_AXIS_TVALID", 0 0, o0x7fc0ae83ae28;  0 drivers
+o0x7fc0ae83ae58 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d65df0_0 .net "clk", 0 0, o0x7fc0ae83ae58;  0 drivers
+o0x7fc0ae83ae88 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55e1c0d65eb0_0 .net "reset_n", 0 0, o0x7fc0ae83ae88;  0 drivers
+E_0x55e1c0d2d9f0 .event posedge, v0x55e1c0d65df0_0;
+    .scope S_0x55e1c0d09d20;
+T_0 ;
+    %vpi_call 2 60 "$display", "Running AXI_UART.sv" {0 0 0};
+    %end;
+    .thread T_0;
+    .scope S_0x55e1c0d09d20;
+T_1 ;
+    %wait E_0x55e1c0d4edf0;
+    %jmp T_1;
+    .thread T_1;
+    .scope S_0x55e1c0d457c0;
+T_2 ;
+    %wait E_0x55e1c0d2d9b0;
+    %load/vec4 v0x55e1c0d65450_0;
+    %cmpi/e 0, 0, 1;
+    %jmp/0xz  T_2.0, 4;
+    %pushi/vec4 0, 0, 1;
+    %assign/vec4 v0x55e1c0d65210_0, 0;
+    %jmp T_2.1;
+T_2.0 ;
+    %load/vec4 v0x55e1c0d65210_0;
+    %nor/r;
+    %flag_set/vec4 8;
+    %load/vec4 v0x55e1c0d64fd0_0;
+    %flag_set/vec4 9;
+    %flag_or 9, 8;
+    %jmp/0xz  T_2.2, 9;
+    %load/vec4 v0x55e1c0d65390_0;
+    %assign/vec4 v0x55e1c0d65210_0, 0;
+T_2.2 ;
+T_2.1 ;
+    %jmp T_2;
+    .thread T_2;
+    .scope S_0x55e1c0d48ce0;
+T_3 ;
+    %wait E_0x55e1c0d2d9f0;
+    %jmp T_3;
+    .thread T_3;
+    .scope S_0x55e1c0d48ce0;
+T_4 ;
+    %wait E_0x55e1c0d2d9f0;
+    %load/vec4 v0x55e1c0d65af0_0;
+    %load/vec4 v0x55e1c0d65d30_0;
+    %and;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_4.0, 8;
+    %vpi_call 4 39 "$display", "Data: %0d", v0x55e1c0d65710_0 {0 0 0};
+T_4.0 ;
+    %jmp T_4;
+    .thread T_4;
+# The file index is used to find the file name in the following table.
+:file_names 5;
+    "N/A";
+    "<interactive>";
+    "./../rtl/AXI_UART.sv";
+    "./../rtl/axi_slave.sv";
+    "./../rtl/axi_master.sv";

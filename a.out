@@ -1,0 +1,92 @@
+#! /usr/bin/vvp
+:ivl_version "11.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision + 0;
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/system.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2005_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/va_math.vpi";
+S_0x55a668327d50 .scope module, "AXI_UART" "AXI_UART" 2 3;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "S_AXI_ACLK";
+    .port_info 1 /INPUT 1 "S_AXI_ARESETN";
+    .port_info 2 /OUTPUT 1 "Interrupt";
+    .port_info 3 /INPUT 4 "S_AXI_AWADDR";
+    .port_info 4 /INPUT 1 "S_AXI_AWVALID";
+    .port_info 5 /OUTPUT 1 "S_AXI_AWREADY";
+    .port_info 6 /INPUT 32 "S_AXI_WDATA";
+    .port_info 7 /INPUT 4 "S_AXI_WSTB";
+    .port_info 8 /INPUT 1 "S_AXI_WAVLID";
+    .port_info 9 /OUTPUT 1 "S_AXI_WREADY";
+    .port_info 10 /OUTPUT 2 "S_AXI_BRESP";
+    .port_info 11 /OUTPUT 1 "S_AXI_BVALID";
+    .port_info 12 /INPUT 1 "S_AXI_BREADY";
+    .port_info 13 /INPUT 4 "S_AXI_ARADDR";
+    .port_info 14 /INPUT 1 "S_AXI_ARVALID";
+    .port_info 15 /OUTPUT 1 "S_AXI_ARREADY";
+    .port_info 16 /OUTPUT 4 "S_AXI_RDATA";
+    .port_info 17 /OUTPUT 2 "S_AXI_RRESP";
+    .port_info 18 /OUTPUT 1 "S_AXI_RVALID";
+    .port_info 19 /INPUT 1 "S_AXI_RREADY";
+    .port_info 20 /INPUT 1 "RX";
+    .port_info 21 /OUTPUT 1 "TX";
+P_0x55a668327ee0 .param/l "C_BAUDRATE" 0 2 13, +C4<00000000000000000010010110000000>;
+P_0x55a668327f20 .param/l "C_DATA_BITS" 0 2 14, +C4<00000000000000000000000000001000>;
+P_0x55a668327f60 .param/str "C_FAMILY" 0 2 6, "virtex6";
+P_0x55a668327fa0 .param/l "C_ODD_PARITY" 0 2 16, +C4<00000000000000000000000000000000>;
+P_0x55a668327fe0 .param/l "C_S_AXI_ACLK_FREQ_HZ" 0 2 7, +C4<00000101111101011110000100000000>;
+P_0x55a668328020 .param/l "C_S_AXI_ADDR_WIDTH" 0 2 9, +C4<00000000000000000000000000000100>;
+P_0x55a668328060 .param/l "C_S_AXI_DATA_WIDTH" 0 2 10, +C4<00000000000000000000000000100000>;
+P_0x55a6683280a0 .param/str "C_S_AXI_PROTOCOL" 0 2 11, "AXI4LITE";
+P_0x55a6683280e0 .param/l "C_USE_PARITY" 0 2 15, +C4<00000000000000000000000000000000>;
+v0x55a668360d20_0 .var "Interrupt", 0 0;
+o0x7f6968032048 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55a668377030_0 .net "RX", 0 0, o0x7f6968032048;  0 drivers
+o0x7f6968032078 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55a6683770f0_0 .net "S_AXI_ACLK", 0 0, o0x7f6968032078;  0 drivers
+o0x7f69680320a8 .functor BUFZ 4, C4<zzzz>; HiZ drive
+v0x55a668377190_0 .net "S_AXI_ARADDR", 3 0, o0x7f69680320a8;  0 drivers
+o0x7f69680320d8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55a668377270_0 .net "S_AXI_ARESETN", 0 0, o0x7f69680320d8;  0 drivers
+v0x55a668377330_0 .var "S_AXI_ARREADY", 0 0;
+o0x7f6968032138 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55a6683773f0_0 .net "S_AXI_ARVALID", 0 0, o0x7f6968032138;  0 drivers
+o0x7f6968032168 .functor BUFZ 4, C4<zzzz>; HiZ drive
+v0x55a6683774b0_0 .net "S_AXI_AWADDR", 3 0, o0x7f6968032168;  0 drivers
+v0x55a668377590_0 .var "S_AXI_AWREADY", 0 0;
+o0x7f69680321c8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55a668377650_0 .net "S_AXI_AWVALID", 0 0, o0x7f69680321c8;  0 drivers
+o0x7f69680321f8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55a668377710_0 .net "S_AXI_BREADY", 0 0, o0x7f69680321f8;  0 drivers
+v0x55a6683777d0_0 .var "S_AXI_BRESP", 1 0;
+v0x55a6683778b0_0 .var "S_AXI_BVALID", 0 0;
+v0x55a668377970_0 .var "S_AXI_RDATA", 3 0;
+o0x7f69680322b8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55a668377a50_0 .net "S_AXI_RREADY", 0 0, o0x7f69680322b8;  0 drivers
+v0x55a668377b10_0 .var "S_AXI_RRESP", 1 0;
+v0x55a668377bf0_0 .var "S_AXI_RVALID", 0 0;
+o0x7f6968032348 .functor BUFZ 1, C4<z>; HiZ drive
+v0x55a668377dc0_0 .net "S_AXI_WAVLID", 0 0, o0x7f6968032348;  0 drivers
+o0x7f6968032378 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x55a668377e80_0 .net "S_AXI_WDATA", 31 0, o0x7f6968032378;  0 drivers
+v0x55a668377f60_0 .var "S_AXI_WREADY", 0 0;
+o0x7f69680323d8 .functor BUFZ 4, C4<zzzz>; HiZ drive
+v0x55a668378020_0 .net "S_AXI_WSTB", 3 0, o0x7f69680323d8;  0 drivers
+v0x55a668378100_0 .var "TX", 0 0;
+E_0x55a668362cb0 .event posedge, v0x55a6683770f0_0;
+    .scope S_0x55a668327d50;
+T_0 ;
+    %vpi_call 2 60 "$display", "Running AXI_UART.sv" {0 0 0};
+    %end;
+    .thread T_0;
+    .scope S_0x55a668327d50;
+T_1 ;
+    %wait E_0x55a668362cb0;
+    %jmp T_1;
+    .thread T_1;
+# The file index is used to find the file name in the following table.
+:file_names 3;
+    "N/A";
+    "<interactive>";
+    "rtl/AXI_UART.sv";
