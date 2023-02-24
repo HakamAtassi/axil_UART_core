@@ -115,13 +115,49 @@ UART_SRAM_interface UART_SRAM_interface (
 );
 
 
+//Notes: 
+//	- Back pressure
+//		- In the case where there is data that is ready to be written to the
+//			SRAM through the AXI interface, but the SRAM is not ready, some back
+//			pressure must be exerted on the UART (from the ) to prevent it from recieving more
+//			data that cannot be used or stored.
+//		- Hence, the Enable signal must be toggled accordingly. 
+//
+//
 
-initial begin 
-	$display("Running AXI_UART.sv");
-end
 
-always @(posedge S_AXI_ACLK) begin
+enum logic [3:0] {
+	S_IDLE,
+	S_RECIEVE_BYTES,
+	S_READY_VALID_WAIT,
+	S_WRITE
+} S_AXI_UART;
 
+
+always_ff @(posedge S_AXI_ACLK) begin
+	if(!M_AXI_ARESETN) begin
+		//TODO add resets
+	end else begin
+		case(S_AXI_UART): begin
+			
+			S_IDLE: begin
+				
+			end
+
+			S_RECIEVE_BYTES: begin	//RX port open. UART recieving data
+				
+			end
+
+			S_READY_VALID_WAIT: begin	//Data is complete. Wait for write opportunity.
+				
+			end
+
+			S_WRITE: begin	//Perform write to slave
+				
+			end
+
+		endcase
+	end
 end
 
 
