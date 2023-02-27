@@ -19,6 +19,8 @@
 //
 //
 
+
+
 module AXI_UART
 #(
 
@@ -55,9 +57,9 @@ module AXI_UART
 
 	// WRITE DATA CHANNEL
 	output logic [C_M_AXI_DATA_WIDTH-1:0] M_AXI_WDATA,	//P7	-	Write Data
-	output logic [C_M_AXI_DATA_WIDTH/8-1:0] M_AXI_WSTB,	//P8	-	Write Strobes
-	output logic M_AXI_WAVLID,							//P9	-	Write Valid
-	input logic M_AXI_WREADY,							//P10	-	Write Ready
+	output logic [C_M_AXI_DATA_WIDTH/8-1:0] M_AXI_WSTB,	//P8	-	Write Data Strobes
+	output logic M_AXI_WAVALID,							//P9	-	Write Data Valid
+	input logic M_AXI_WREADY,							//P10	-	Write Data Ready
 
 	
 	// WRITE RESPONSE CHANNEL
@@ -78,16 +80,13 @@ module AXI_UART
 	output logic M_AXI_RREADY,							//P20	-	Read Ready
 
 
-	input logic RX,										//P21	-	Recieve 
-	output logic TX,									//P22	-	Transmit 
+	output logic TX,									//P22	-	Transmit (not used)
 	
 	//==========================UART INPUT SIGNALS================================
-
 	
-	input logic UART_RX_I,								//RX input to UART form HOST
-	input logic Initialize,								//TODO
-	input logic Enable									//TODO
-
+	input logic UART_RX_I,								//RX input to UART from HOST
+	input logic UART_initialize,						//TODO
+	output logic UART_enable							//TODO Output?
 
 );
 
@@ -95,6 +94,16 @@ module AXI_UART
 
 logic [MEMORY_ADDR_WIDTH-1:0] SRAM_address;	//number of bits needed to address embedded mem.
 logic [MEMORY_DATA_WIDTH-1:0] SRAM_write_data;
+logic Initialize;
+
+
+
+
+logic write_valid;	// Is the current write data/address "AXI" valid	
+assign write_valid = M_AXI_AWVALID && M_AXI_WAVLID;	//TODO: missing signals?
+
+logic write_ready;	// Is the slave "AXI" ready for a write operation
+assign write_ready = M_AXI_AWREADY && M_AXI_WREADY;
 
 // UART reciever inst.
 // Recieves data from host PC/Periphiral through RX pin
@@ -105,8 +114,8 @@ UART_SRAM_interface UART_SRAM_interface (
 	.Resetn(M_AXI_ARESETN), 
 
 	.UART_RX_I(UART_RX_I),
-	.Initialize(Initialize),
-	.Enable(Enable),
+	.Initialize(UART_initialize),
+	.Enable(UART_enable),
    
 	.SRAM_address(SRAM_address),
 	.SRAM_write_data(SRAM_write_data),
@@ -119,42 +128,82 @@ UART_SRAM_interface UART_SRAM_interface (
 //	- Back pressure
 //		- In the case where there is data that is ready to be written to the
 //			SRAM through the AXI interface, but the SRAM is not ready, some back
-//			pressure must be exerted on the UART (from the ) to prevent it from recieving more
+//			pressure must be exerted on the UART to prevent it from recieving more
 //			data that cannot be used or stored.
-//		- Hence, the Enable signal must be toggled accordingly. 
-//
-//
 
 
 enum logic [3:0] {
 	S_IDLE,
-	S_RECIEVE_BYTES,
-	S_READY_VALID_WAIT,
-	S_WRITE
+	S_RECIEVE_WORDS	//TODO: Parameterize word size
 } S_AXI_UART;
+
+
+
 
 
 always_ff @(posedge S_AXI_ACLK) begin
 	if(!M_AXI_ARESETN) begin
-		//TODO add resets
+		
+		//WRITE ADDRESS CHANNEL
+		M_AXI_AWADDR<={C_M_AXI_ADDR_WIDTH{0}}; 	//TODO: number of bits is a param??
+		M_AXI_AWVALID<=1'b0;
+
+		//WRITE DATA CHANNEL
+		M_AXI_WDATA<=SRAM_write_data;
+		M_AXI_WSTB<={C_M_AXI_DATA_WIDTH{1}};	//Mask with all 1s (normal write, no strobe)
+		M_AXI_WAVLID<=1'b0;
+
+		// WRITE RESPONSE CHANNEL
+		M_AXI_BREADY<=1'b0;	
+
+		// READ ADDRESS CHANNEL
+		M_AXI_ARADDR<={C_M_AXI_ADDR_WIDTH{0}};
+		M_AXI_ARVALID<=1'b0;
+
+		// READ DATA CHANNEL
+		M_AXI_RREADY<=1'b0;
+
+		
+
 	end else begin
 		case(S_AXI_UART): begin
 			
 			S_IDLE: begin
-				
+				if(UART_enable==1'b1) begin		//Start UART transmission
+					S_AXI_UART<=S_RECIEVE_WORDS;
+				end
 			end
 
-			S_RECIEVE_BYTES: begin	//RX port open. UART recieving data
-				
+			S_RECIEVE_WORDS: begin	//RX port open. UART recieving data
+
+				/** AXI MASTER LOGIC **/
+
+				// If write is valid and slave is ready => data can update
+				// If write is valid and slave is not ready => "Hold" data (TODO: How?? buffer?)
+				// If write is not valid and slave is ready	=> data can update
+				// If write is not valid and slave is not ready => data can update
+
+
+				M_AXI_AWVALID<=1'b0;
+				M_AXI_WAVLID<=1'b0;
+				if(!write_valid || write_ready) begin
+					M_AXI_WDATA<=SRAM_write_data;
+					M_AXI_AWADDR<=SRAM_address;	
+				end
+
+
+				if(SRAM_we_n==1'b1) begin
+					// Make signals valid such that they are actually written
+
+					M_AXI_AWVALID<=1'b1;
+					M_AXI_WAVLID<=1'b1;
+
+					//TODO: Overrun? Backpressure?
+				end else if(SRAM_address=={MEMORY_ADDR_WIDTH{1}}) begin
+					S_AXI_UART<=S_IDLE;
+				end
 			end
 
-			S_READY_VALID_WAIT: begin	//Data is complete. Wait for write opportunity.
-				
-			end
-
-			S_WRITE: begin	//Perform write to slave
-				
-			end
 
 		endcase
 	end

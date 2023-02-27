@@ -43,32 +43,37 @@ module axil_ram #
     parameter PIPELINE_OUTPUT = 0
 )
 (
+	// GLOBAL SIGNALS
     input  wire                   clk,
     input  wire                   rst,
 
+	// WRITE ADDRESS CHANNEL
     input  wire [ADDR_WIDTH-1:0]  s_axil_awaddr,
-    input  wire [2:0]             s_axil_awprot,
+    input  wire [2:0]             s_axil_awprot,	//Not used by UART
     input  wire                   s_axil_awvalid,
     output wire                   s_axil_awready,
 
-
+	// WRITE DATA CHANNEL
     input  wire [DATA_WIDTH-1:0]  s_axil_wdata,
     input  wire [STRB_WIDTH-1:0]  s_axil_wstrb,
     input  wire                   s_axil_wvalid,
     output wire                   s_axil_wready,
 
 
+	// WRITE RESPONSE CHANNEL
     output wire [1:0]             s_axil_bresp,
     output wire                   s_axil_bvalid,
     input  wire                   s_axil_bready,
 
 
+	// READ ADDRESS CHANNEL
     input  wire [ADDR_WIDTH-1:0]  s_axil_araddr,
-    input  wire [2:0]             s_axil_arprot,
+    input  wire [2:0]             s_axil_arprot,	//Not used by UART
     input  wire                   s_axil_arvalid,
     output wire                   s_axil_arready,
 
 
+	// READ DATA CHANNEL
     output wire [DATA_WIDTH-1:0]  s_axil_rdata,
     output wire [1:0]             s_axil_rresp,
     output wire                   s_axil_rvalid,

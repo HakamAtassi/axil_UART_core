@@ -18,9 +18,9 @@ module UART_SRAM_interface (
    input  logic		Clock,
    input  logic		Resetn, 
 
-   input  logic		UART_RX_I,
-   input  logic		Initialize,
-   input  logic		Enable,
+   input  logic		UART_RX_I,			// Input line
+   input  logic		Initialize,			
+   input  logic		Enable,				// Enable rx reciever. Wait for Start bit on line
    
    output logic [17:0]	SRAM_address,
    output logic [15:0]	SRAM_write_data,
@@ -68,7 +68,7 @@ always_ff @ (posedge Clock or negedge Resetn) begin
 		
 		UART_SRAM_state <= S_US_IDLE;
 	end else begin
-		if (Initialize == 1'b1) begin
+		if (Initialize == 1'b1) begin	// In case UART module is used several times
 			UART_rx_enable <= 1'b0;
 			UART_rx_unload_data <= 1'b0;
 			
@@ -84,11 +84,16 @@ always_ff @ (posedge Clock or negedge Resetn) begin
 			S_US_IDLE: begin
 				if (Enable == 1'b1) begin
 					// Start receiving data from UART
-					UART_SRAM_state <= S_US_STRIP_FILE_HEADER_1;
+					UART_SRAM_state <= S_US_START_FIRST_BYTE_RECEIVE;
 					UART_rx_enable <= 1'b1;
 					SRAM_address <= 18'd0;				
 				end
 			end
+
+			// NOTE: Below is commented out since the 3DQ project used PPM
+			// formatted files which have a header that is not needed in the
+			// SRAM...
+			/*
 			S_US_STRIP_FILE_HEADER_1: begin
 				if (UART_rx_empty == 1'b0) begin
 					// a byte of data is available
@@ -113,6 +118,7 @@ always_ff @ (posedge Clock or negedge Resetn) begin
 						UART_SRAM_state <= S_US_STRIP_FILE_HEADER_1;          
 				end						
 			end
+			*/
 			S_US_START_FIRST_BYTE_RECEIVE: begin
 				if (UART_rx_empty == 1'b0) begin
 					// a byte of data is available
