@@ -1,4 +1,4 @@
-
+/*
 `include "../rtl/axi_slave.sv"
 `include "../rtl/axi_master.sv"
 
@@ -9,7 +9,7 @@
 
 `include "../rtl/UART/define_state.h"
 
-
+*/
 
 module axi_tb;
 
@@ -33,12 +33,12 @@ parameter C_ODD_PARITY = 0;
 /*	UART I/O	*/
 logic S_AXI_ACLK;								//P1	-	Clock
 logic S_AXI_ARESETN;							//P2	-	Reset (active low)
-wire Interrupt;								//P3	-	Interrupt
+wire Interrupt;									//P3	-	Interrupt
 
 
 logic [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_AWADDR;	//P4	-	Write Address
 logic S_AXI_AWVALID;							//P5	-	Write Valid
-wire S_AXI_AWREADY;							//P6	-	Write Ready
+wire S_AXI_AWREADY;								//P6	-	Write Ready
 
 
 logic [C_S_AXI_DATA_WIDTH-1:0] S_AXI_WDATA;		//P7	-	Write Data
@@ -47,19 +47,19 @@ logic S_AXI_WAVLID;								//P9	-	Write Valid
 wire S_AXI_WREADY;								//P10	-	Write Ready
 
 
-wire [1:0] S_AXI_BRESP;						//P11	-	Write Response (Faults/errors)
+wire [1:0] S_AXI_BRESP;							//P11	-	Write Response (Faults/errors)
 wire S_AXI_BVALID;								//P12	-	Write Response Valid
 logic S_AXI_BREADY;								//P13	-	Write Response Ready
 
 
 logic [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_ARADDR;	//P14	-	Read Address
 logic S_AXI_ARVALID;							//P15	-	Read Address Valid
-wire S_AXI_ARREADY;							//P16	-	Read Address Ready
+wire S_AXI_ARREADY;								//P16	-	Read Address Ready
 
 
 
 wire [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_RDATA;		//P17	-	Read Data 
-wire [1:0] S_AXI_RRESP;						//P18	-	Read Response (Faults/errors)
+wire [1:0] S_AXI_RRESP;							//P18	-	Read Response (Faults/errors)
 wire S_AXI_RVALID;								//P19	-	Read Valid
 logic S_AXI_RREADY;								//P20	-	Read Ready
 
@@ -78,20 +78,10 @@ end
 
 
 
-
-initial begin
-
-
-end
-
-
-
-
-
 initial begin
 	repeat(10000) @(posedge S_AXI_ACLK);
 	$display("Testbench duration exhausted (10,000 clocks) ");
-	$finish;
+	$stop;
 end
 
 endmodule

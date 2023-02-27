@@ -38,7 +38,7 @@ module AXI_UART
 
 	//Embedded memory parameters
 	parameter MEMORY_ADDR_WIDTH = 18,
-	parameter MEMORY_DATA_WIDTH = 16,
+	parameter MEMORY_DATA_WIDTH = 16
 
 )
 (
@@ -100,7 +100,7 @@ logic Initialize;
 
 
 logic write_valid;	// Is the current write data/address "AXI" valid	
-assign write_valid = M_AXI_AWVALID && M_AXI_WAVLID;	//TODO: missing signals?
+assign write_valid = M_AXI_AWVALID && M_AXI_WAVALID;	//TODO: missing signals?
 
 logic write_ready;	// Is the slave "AXI" ready for a write operation
 assign write_ready = M_AXI_AWREADY && M_AXI_WREADY;
@@ -141,7 +141,7 @@ enum logic [3:0] {
 
 
 
-always_ff @(posedge S_AXI_ACLK) begin
+always_ff @(posedge M_AXI_ACLK) begin
 	if(!M_AXI_ARESETN) begin
 		
 		//WRITE ADDRESS CHANNEL
@@ -151,7 +151,7 @@ always_ff @(posedge S_AXI_ACLK) begin
 		//WRITE DATA CHANNEL
 		M_AXI_WDATA<=SRAM_write_data;
 		M_AXI_WSTB<={C_M_AXI_DATA_WIDTH{1}};	//Mask with all 1s (normal write, no strobe)
-		M_AXI_WAVLID<=1'b0;
+		M_AXI_WAVALID<=1'b0;
 
 		// WRITE RESPONSE CHANNEL
 		M_AXI_BREADY<=1'b0;	
@@ -166,7 +166,7 @@ always_ff @(posedge S_AXI_ACLK) begin
 		
 
 	end else begin
-		case(S_AXI_UART): begin
+		case(S_AXI_UART)
 			
 			S_IDLE: begin
 				if(UART_enable==1'b1) begin		//Start UART transmission
@@ -185,7 +185,7 @@ always_ff @(posedge S_AXI_ACLK) begin
 
 
 				M_AXI_AWVALID<=1'b0;
-				M_AXI_WAVLID<=1'b0;
+				M_AXI_WAVALID<=1'b0;
 				if(!write_valid || write_ready) begin
 					M_AXI_WDATA<=SRAM_write_data;
 					M_AXI_AWADDR<=SRAM_address;	
@@ -196,7 +196,7 @@ always_ff @(posedge S_AXI_ACLK) begin
 					// Make signals valid such that they are actually written
 
 					M_AXI_AWVALID<=1'b1;
-					M_AXI_WAVLID<=1'b1;
+					M_AXI_WAVALID<=1'b1;
 
 					//TODO: Overrun? Backpressure?
 				end else if(SRAM_address=={MEMORY_ADDR_WIDTH{1}}) begin

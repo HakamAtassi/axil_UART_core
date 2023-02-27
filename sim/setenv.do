@@ -1,7 +1,7 @@
 set rtl ../rtl
 set tb ../tb
 set sim .
-set top TB
+set top axi_tb
 
 onbreak {resume}
 

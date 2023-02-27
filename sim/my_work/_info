@@ -1,0 +1,190 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 d/home/hakam/Repos/AXI/sim
+vaxi_tb
+Z1 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
+Z2 !s110 1677469984
+!i10b 1
+!s100 ]=`R[F:[T=>g6EQKb^`LU0
+I5Mb0ND_d^7GOR;`^M@`>H1
+Z3 VDg1SIo80bB@j0V0VzS_@n1
+!s105 axi_tb_sv_unit
+S1
+R0
+w1677469983
+8../tb/axi_tb.sv
+F../tb/axi_tb.sv
+L0 14
+Z4 OV;L;10.5b;63
+r1
+!s85 0
+31
+Z5 !s108 1677469984.000000
+!s107 ../tb/axi_tb.sv|
+!s90 -reportprogress|300|-sv|-work|my_work|+define+DISABLE_DEFAULT_NET|../tb/axi_tb.sv|
+!i113 1
+Z6 o-sv -work my_work
+!s92 -sv -work my_work +define+DISABLE_DEFAULT_NET
+Z7 tCvgOpt 0
+vAXI_UART
+R1
+R2
+!i10b 1
+!s100 nL0fKnLS[^I8Y;fDFbM9f1
+Ik72C3k_T_H_I`PNGM4Qh<3
+R3
+!s105 AXI_UART_sv_unit
+S1
+R0
+w1677468983
+8../rtl/AXI_UART.sv
+F../rtl/AXI_UART.sv
+L0 24
+R4
+r1
+!s85 0
+31
+R5
+!s107 ../rtl/AXI_UART.sv|
+!s90 -reportprogress|300|-sv|-work|my_work|+define+DISABLE_DEFAULT_NET|+define+SIMULATION|../rtl/AXI_UART.sv|
+!i113 1
+R6
+Z8 !s92 -sv -work my_work +define+DISABLE_DEFAULT_NET +define+SIMULATION
+R7
+n@a@x@i_@u@a@r@t
+vtop
+R1
+R2
+!i10b 1
+!s100 azMIlT=UgEoUlcPlib3[o0
+IMTE=UVNo>77AV_Y?WzkE`1
+R3
+!s105 top_sv_unit
+S1
+R0
+w1677469647
+8../rtl/top.sv
+F../rtl/top.sv
+L0 3
+R4
+r1
+!s85 0
+31
+R5
+!s107 ../rtl/top.sv|
+!s90 -reportprogress|300|-sv|-work|my_work|+define+DISABLE_DEFAULT_NET|+define+SIMULATION|../rtl/top.sv|
+!i113 1
+R6
+R8
+R7
+vUART_receive_controller
+R1
+DXx4 work 31 UART_receive_controller_sv_unit 0 22 H:5olEBdn=nBEzKzWk86I3
+R3
+r1
+!s85 0
+31
+!i10b 1
+!s100 cLZLcFU4VL@QocoPD>3`W3
+I@=:GjeJfSIc55iJIMQXiW2
+!s105 UART_receive_controller_sv_unit
+S1
+R0
+Z9 w1677203641
+Z10 8../rtl/UART/UART_receive_controller.sv
+Z11 F../rtl/UART/UART_receive_controller.sv
+L0 25
+R4
+R5
+Z12 !s107 ../rtl/UART/define_state.h|../rtl/UART/UART_receive_controller.sv|
+Z13 !s90 -reportprogress|300|-sv|-work|my_work|+define+DISABLE_DEFAULT_NET|+define+SIMULATION|../rtl/UART/UART_receive_controller.sv|
+!i113 1
+R6
+R8
+R7
+n@u@a@r@t_receive_controller
+XUART_receive_controller_sv_unit
+R1
+VH:5olEBdn=nBEzKzWk86I3
+r1
+!s85 0
+31
+!i10b 1
+!s100 `fSWcM?>ia[Bb7[lHEbbI1
+IH:5olEBdn=nBEzKzWk86I3
+!i103 1
+S1
+R0
+R9
+R10
+R11
+Z14 F../rtl/UART/define_state.h
+L0 4
+R4
+R5
+R12
+R13
+!i113 1
+R6
+R8
+R7
+n@u@a@r@t_receive_controller_sv_unit
+vUART_SRAM_interface
+R1
+DXx4 work 27 UART_SRAM_interface_sv_unit 0 22 <jIZLDG;[mXZNZ5JG<G[<2
+R3
+r1
+!s85 0
+31
+!i10b 1
+!s100 iT:RgDU<5WBo7Ojgk0R<N2
+Il:3DW;iE`f@j67EWLM5i33
+!s105 UART_SRAM_interface_sv_unit
+S1
+R0
+Z15 w1677373698
+Z16 8../rtl/UART/UART_SRAM_interface.sv
+Z17 F../rtl/UART/UART_SRAM_interface.sv
+L0 17
+R4
+R5
+Z18 !s107 ../rtl/UART/define_state.h|../rtl/UART/UART_SRAM_interface.sv|
+Z19 !s90 -reportprogress|300|-sv|-work|my_work|+define+DISABLE_DEFAULT_NET|+define+SIMULATION|../rtl/UART/UART_SRAM_interface.sv|
+!i113 1
+R6
+R8
+R7
+n@u@a@r@t_@s@r@a@m_interface
+XUART_SRAM_interface_sv_unit
+R1
+V<jIZLDG;[mXZNZ5JG<G[<2
+r1
+!s85 0
+31
+!i10b 1
+!s100 nlkzEWU5<Ph5k63YVZn7O3
+I<jIZLDG;[mXZNZ5JG<G[<2
+!i103 1
+S1
+R0
+R15
+R16
+R17
+R14
+L0 4
+R4
+R5
+R18
+R19
+!i113 1
+R6
+R8
+R7
+n@u@a@r@t_@s@r@a@m_interface_sv_unit
