@@ -1,13 +1,4 @@
-
-# AXI Handshaking
-
-
-The process of performing a handshake is essentially a way of encapsulating when a valid
-data transfer takes place between a master and slave and/or series of masters and series of slaves
-
-
-The handshaking process depends on a valid signal that is controlled by a master and a ready signal
-that is controlled by a slave. 
+# Notes
 
 The logic is of data transfers is the following:
 
