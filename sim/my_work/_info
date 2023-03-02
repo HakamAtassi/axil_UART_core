@@ -10,23 +10,23 @@ cModel Technology
 Z0 d/home/hakam/Repos/AXI/sim
 vaxi_tb
 Z1 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
-Z2 !s110 1677469984
+Z2 !s110 1677741875
 !i10b 1
-!s100 ]=`R[F:[T=>g6EQKb^`LU0
-I5Mb0ND_d^7GOR;`^M@`>H1
+!s100 BckZG9i?@@EzW<J1g3<XU3
+IXcV1hN@eKG8IHfj22L<UU2
 Z3 VDg1SIo80bB@j0V0VzS_@n1
 !s105 axi_tb_sv_unit
 S1
 R0
-w1677469983
+w1677740066
 8../tb/axi_tb.sv
 F../tb/axi_tb.sv
-L0 14
+L0 3
 Z4 OV;L;10.5b;63
 r1
 !s85 0
 31
-Z5 !s108 1677469984.000000
+Z5 !s108 1677741875.000000
 !s107 ../tb/axi_tb.sv|
 !s90 -reportprogress|300|-sv|-work|my_work|+define+DISABLE_DEFAULT_NET|../tb/axi_tb.sv|
 !i113 1
@@ -37,13 +37,13 @@ vAXI_UART
 R1
 R2
 !i10b 1
-!s100 nL0fKnLS[^I8Y;fDFbM9f1
-Ik72C3k_T_H_I`PNGM4Qh<3
+!s100 Z1neazb9=C>1R46J6Ge9i0
+I]85Z6GNVG]2aB7h[o5g>[0
 R3
 !s105 AXI_UART_sv_unit
 S1
 R0
-w1677468983
+w1677741788
 8../rtl/AXI_UART.sv
 F../rtl/AXI_UART.sv
 L0 24
@@ -59,17 +59,42 @@ R6
 Z8 !s92 -sv -work my_work +define+DISABLE_DEFAULT_NET +define+SIMULATION
 R7
 n@a@x@i_@u@a@r@t
+vaxil_ram
+R1
+R2
+!i10b 1
+!s100 ^Niczc0jX7HZ1V8k:fAbe0
+IAXG3KCS`2WEWLRUhPLOUz1
+R3
+!s105 axil_ram_v_unit
+S1
+R0
+w1677739891
+8../rtl/alexForAXI/axil_ram.v
+F../rtl/alexForAXI/axil_ram.v
+L0 34
+R4
+r1
+!s85 0
+31
+R5
+!s107 ../rtl/alexForAXI/axil_ram.v|
+!s90 -reportprogress|300|-sv|-work|my_work|+define+DISABLE_DEFAULT_NET|+define+SIMULATION|../rtl/alexForAXI/axil_ram.v|
+!i113 1
+R6
+R8
+R7
 vtop
 R1
 R2
 !i10b 1
-!s100 azMIlT=UgEoUlcPlib3[o0
-IMTE=UVNo>77AV_Y?WzkE`1
+!s100 3KR0=IjaPo@eU@:ilBY;j0
+Il`>z_F7QVR04kV`B]l^>03
 R3
 !s105 top_sv_unit
 S1
 R0
-w1677469647
+w1677741873
 8../rtl/top.sv
 F../rtl/top.sv
 L0 3
@@ -86,18 +111,18 @@ R8
 R7
 vUART_receive_controller
 R1
-DXx4 work 31 UART_receive_controller_sv_unit 0 22 H:5olEBdn=nBEzKzWk86I3
+DXx4 work 31 UART_receive_controller_sv_unit 0 22 F`@mkT0@8A^;<fK^H<5P_3
 R3
 r1
 !s85 0
 31
 !i10b 1
-!s100 cLZLcFU4VL@QocoPD>3`W3
-I@=:GjeJfSIc55iJIMQXiW2
+!s100 IPnJ6;E3iKfBh:S=le>Bo3
+I5Glbd2hOOhX[SjmlMk^aU0
 !s105 UART_receive_controller_sv_unit
 S1
 R0
-Z9 w1677203641
+Z9 w1677739929
 Z10 8../rtl/UART/UART_receive_controller.sv
 Z11 F../rtl/UART/UART_receive_controller.sv
 L0 25
@@ -112,13 +137,13 @@ R7
 n@u@a@r@t_receive_controller
 XUART_receive_controller_sv_unit
 R1
-VH:5olEBdn=nBEzKzWk86I3
+VF`@mkT0@8A^;<fK^H<5P_3
 r1
 !s85 0
 31
 !i10b 1
-!s100 `fSWcM?>ia[Bb7[lHEbbI1
-IH:5olEBdn=nBEzKzWk86I3
+!s100 h>8NgFW[Jl6^cVY2d2;W`3
+IF`@mkT0@8A^;<fK^H<5P_3
 !i103 1
 S1
 R0
@@ -138,18 +163,18 @@ R7
 n@u@a@r@t_receive_controller_sv_unit
 vUART_SRAM_interface
 R1
-DXx4 work 27 UART_SRAM_interface_sv_unit 0 22 <jIZLDG;[mXZNZ5JG<G[<2
+DXx4 work 27 UART_SRAM_interface_sv_unit 0 22 U`5eMUNzz`AGTVz_]0h==1
 R3
 r1
 !s85 0
 31
 !i10b 1
-!s100 iT:RgDU<5WBo7Ojgk0R<N2
-Il:3DW;iE`f@j67EWLM5i33
+!s100 >1BZ0SeRiiEGCY<B;iW5`1
+IW`a1h`Ok9jUk<_HcDh1Y[3
 !s105 UART_SRAM_interface_sv_unit
 S1
 R0
-Z15 w1677373698
+Z15 w1677739924
 Z16 8../rtl/UART/UART_SRAM_interface.sv
 Z17 F../rtl/UART/UART_SRAM_interface.sv
 L0 17
@@ -164,13 +189,13 @@ R7
 n@u@a@r@t_@s@r@a@m_interface
 XUART_SRAM_interface_sv_unit
 R1
-V<jIZLDG;[mXZNZ5JG<G[<2
+VU`5eMUNzz`AGTVz_]0h==1
 r1
 !s85 0
 31
 !i10b 1
-!s100 nlkzEWU5<Ph5k63YVZn7O3
-I<jIZLDG;[mXZNZ5JG<G[<2
+!s100 hQ1Z2ce29<be67>0Cf`>i3
+IU`5eMUNzz`AGTVz_]0h==1
 !i103 1
 S1
 R0

@@ -53,8 +53,8 @@ logic M_AXI_WAVLID;								//P9	-	Write Valid
 
 
 // WRITE RESPONSE CHANNEL
-logic [1:0] M_AXI_BRESP;						//P11	-	Write Response (Faults/errors)
-logic M_AXI_BVALID;								//P12	-	Write Response Valid
+logic M_AXI_BREADY;								//P13	-	Write Response Ready
+
 
 // READ ADDRESS CHANNEL
 logic [C_M_AXI_ADDR_WIDTH-1:0] M_AXI_ARADDR;	//P14	-	Read Address
@@ -65,6 +65,8 @@ logic M_AXI_ARVALID;							//P15	-	Read Address Valid
 logic M_AXI_RREADY;								//P20	-	Read Ready
 
 
+logic TX;									//P22	-	Transmit (not used)
+logic UART_enable;							//TODO Output?
 // =========================== SLAVE SIGNALS =========================//
 
 
@@ -93,54 +95,69 @@ wire                   s_axil_arvalid;
 wire                   s_axil_rready;
 
 
+wire [C_M_AXI_DATA_WIDTH-1:0] s_axil_rdata;	
+
+logic [1:0] s_axil_rresp;						//P18	-	Read Response (Faults/errors)
+
+wire [1:0] s_axil_bresp;						//P11	-	Write Response (Faults/errors)
+wire s_axil_bvalid;								//P12	-	Write Response Valid
+
 
 AXI_UART#(
 	.C_FAMILY("virtex6"),
-	.C_S_AXI_ACLK_FREQ_HZ(C_M_AXI_ACLK_FREQ_HZ),
+	.C_M_AXI_ACLK_FREQ_HZ(C_M_AXI_ACLK_FREQ_HZ),
 	
-	.C_S_AXI_ADDR_WIDTH(C_M_AXI_ADDR_WIDTH),
-	.C_S_AXI_DATA_WIDTH(C_M_AXI_DATA_WIDTH),
-	.C_S_AXI_PROTOCOL(C_M_AXI_PROTOCOL),
+	.C_M_AXI_ADDR_WIDTH(C_M_AXI_ADDR_WIDTH),
+	.C_M_AXI_DATA_WIDTH(C_M_AXI_DATA_WIDTH),
+	.C_M_AXI_PROTOCOL(C_M_AXI_PROTOCOL),
 
 	.C_BAUDRATE(C_BAUDRATE),
 	.C_DATA_BITS(C_DATA_BITS),
 	.C_USE_PARITY(C_USE_PARITY),
-	.C_ODD_PARITY(C_ODD_PARITY)
+	.C_ODD_PARITY(C_ODD_PARITY),
+
+	.MEMORY_ADDR_WIDTH(MEMORY_ADDR_WIDTH),
+	.MEMORY_DATA_WIDTH(MEMORY_DATA_WIDTH)
 )
 AXI_UART (
-	.S_AXI_ACLK(clk),								//P1	-	Clock
-	.S_AXI_ARESETN(resetn),							//P2	-	Reset (active low)
+	.M_AXI_ACLK(clk),								//P1	-	Clock
+	.M_AXI_ARESETN(resetn),							//P2	-	Reset (active low)
 	.Interrupt(Interrupt),							//P3	-	Interrupt
 
 
-	.S_AXI_AWADDR(S_AXI_AWADDR),					//P4	-	Write Address
-	.S_AXI_AWVALID(S_AXI_AWVALID),					//P5	-	Write Valid
-	.S_AXI_AWREADY(s_axil_awready),					//P6	-	Write Ready
+	.M_AXI_AWADDR(M_AXI_AWADDR),					//P4	-	Write Address
+	.M_AXI_AWVALID(M_AXI_AWVALID),					//P5	-	Write Valid
+	.M_AXI_AWREADY(s_axil_awready),					//P6	-	Write Ready
 
 
-	.S_AXI_WDATA(S_AXI_WDATA),						//P7	-	Write Data
-	.S_AXI_WSTB(S_AXI_WSTB),						//P8	-	Write Strobes
-	.S_AXI_WAVLID(S_AXI_WAVLID),					//P9	-	Write Valid
-	.S_AXI_WREADY(s_axil_wready),					//P10	-	Write Ready
+	.M_AXI_WDATA(M_AXI_WDATA),						//P7	-	Write Data
+	.M_AXI_WSTB(M_AXI_WSTB),						//P8	-	Write Strobes
+	.M_AXI_WAVALID(M_AXI_WAVALID),					//P9	-	Write Valid
+	.M_AXI_WREADY(s_axil_wready),					//P10	-	Write Ready
 
 
-	.S_AXI_BRESP(s_axil_bresp),						//P11	-	Write Response (Faults/errors)
-	.S_AXI_BVALID(s_axil_bvalid),					//P12	-	Write Response Valid
-	.S_AXI_BREADY(S_AXI_BREADY),					//P13	-	Write Response Ready
+	.M_AXI_BRESP(s_axil_bresp),						//P11	-	Write Response (Faults/errors)
+	.M_AXI_BVALID(s_axil_bvalid),					//P12	-	Write Response Valid
+	.M_AXI_BREADY(M_AXI_BREADY),					//P13	-	Write Response Ready
 
 
-	.S_AXI_ARADDR(S_AXI_ARADDR),					//P14	-	Read Address
-	.S_AXI_ARVALID(S_AXI_ARVALID),					//P15	-	Read Address Valid
-	.S_AXI_ARREADY(s_axil_arready),					//P16	-	Read Address Ready
+	.M_AXI_ARADDR(M_AXI_ARADDR),					//P14	-	Read Address
+	.M_AXI_ARVALID(M_AXI_ARVALID),					//P15	-	Read Address Valid
+	.M_AXI_ARREADY(s_axil_arready),					//P16	-	Read Address Ready
 
 
-	.S_AXI_RDATA(s_axil_rdata),						//P17	-	Read Data 
-	.S_AXI_RRESP(s_axil_rresp),						//P18	-	Read Response (Faults/errors)
-	.S_AXI_RVALID(s_axil_rvalid),					//P19	-	Read Valid
-	.S_AXI_RREADY(S_AXI_RREADY),					//P20	-	Read Ready
+	.M_AXI_RDATA(s_axil_rdata),						//P17	-	Read Data 
+	.M_AXI_RRESP(s_axil_rresp),						//P18	-	Read Response (Faults/errors)
+	.M_AXI_RVALID(s_axil_rvalid),					//P19	-	Read Valid
+	.M_AXI_RREADY(M_AXI_RREADY),					//P20	-	Read Ready
 
-	.RX(RX),										//P21	-	Recieve 
-	.TX(TX)											//P22	-	Transmit
+	.UART_RX_I(RX),									//P21	-	Recieve 
+	.TX(TX),											//P22	-	Transmit
+
+
+	.UART_initialize(UART_initialize),
+	.UART_enable(UART_enable)
+
 );
 
 axil_ram #(
@@ -173,7 +190,7 @@ axil_ram
 
 
 	// WRITE RESPONSE CHANNEL
-    .s_axil_bresp(S_AXI_BRESP),
+    .s_axil_bresp(s_axil_bresp),
     
 	.s_axil_bvalid(S_AXI_BVALID),
     .s_axil_bready(s_axil_bready),
@@ -187,8 +204,8 @@ axil_ram
 
 
 	// READ DATA CHANNEL
-    .s_axil_rdata(S_AXI_RDATA),
-    .s_axil_rresp(S_AXI_RRESP),
+    .s_axil_rdata(s_axil_rdata),
+    .s_axil_rresp(s_axil_rresp),
     .s_axil_rvalid(S_AXI_RVALID),
     .s_axil_rready(s_axil_rready)
 );

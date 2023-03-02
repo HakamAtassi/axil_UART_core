@@ -74,17 +74,17 @@ module AXI_UART
 
 
 	// READ DATA CHANNEL
-	input logic [C_M_AXI_ADDR_WIDTH-1:0] M_AXI_RDATA,	//P17	-	Read Data 
+	input logic [C_M_AXI_DATA_WIDTH-1:0] M_AXI_RDATA,	//P17	-	Read Data 
 	input logic [1:0] M_AXI_RRESP,						//P18	-	Read Response (Faults/errors)
 	input logic M_AXI_RVALID,							//P19	-	Read Valid
 	output logic M_AXI_RREADY,							//P20	-	Read Ready
 
 
+	input logic UART_RX_I,								//P21 	-	input to UART from HOST
 	output logic TX,									//P22	-	Transmit (not used)
 	
 	//==========================UART INPUT SIGNALS================================
 	
-	input logic UART_RX_I,								//RX input to UART from HOST
 	input logic UART_initialize,						//TODO
 	output logic UART_enable							//TODO Output?
 
@@ -183,25 +183,35 @@ always_ff @(posedge M_AXI_ACLK) begin
 				// If write is not valid and slave is ready	=> data can update
 				// If write is not valid and slave is not ready => data can update
 
+				
+				if(SRAM_we_n==1'b1) begin
+					M_AXI_AWVALID<=1'b1;
+					M_AXI_WAVALID<=1'b1;
+				end
 
-				M_AXI_AWVALID<=1'b0;
-				M_AXI_WAVALID<=1'b0;
-				if(!write_valid || write_ready) begin
+				if(write_valid==1'b1 && write_ready==1'b1) begin	//transaction ends when valid and ready	(for AXI lite)
+					M_AXI_AWVALID<=1'b0;
+					M_AXI_WAVALID<=1'b0;
+				end
+
+
+				if(!write_valid) begin	//TODO: make sure data is constant while valid is high
 					M_AXI_WDATA<=SRAM_write_data;
 					M_AXI_AWADDR<=SRAM_address;	
 				end
 
+				//TODO: Overrun? Backpressure?
 
-				if(SRAM_we_n==1'b1) begin
-					// Make signals valid such that they are actually written
 
-					M_AXI_AWVALID<=1'b1;
-					M_AXI_WAVALID<=1'b1;
-
-					//TODO: Overrun? Backpressure?
-				end else if(SRAM_address=={MEMORY_ADDR_WIDTH{1}}) begin
+				if(SRAM_address=={MEMORY_ADDR_WIDTH{1}}) begin
 					S_AXI_UART<=S_IDLE;
+					// TODO: if the valids were just asserted but addresses
+					// but was on last address, infinite writes will occur...
 				end
+
+
+
+
 			end
 
 

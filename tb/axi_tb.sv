@@ -1,15 +1,4 @@
-/*
-`include "../rtl/axi_slave.sv"
-`include "../rtl/axi_master.sv"
-
-`include "../rtl/AXI_UART.sv"
-
-`include "../rtl/UART/UART_SRAM_interface.sv"
-`include "../rtl/UART/UART_receive_controller.sv"
-
-`include "../rtl/UART/define_state.h"
-
-*/
+`timescale 1ns/100ps
 
 module axi_tb;
 
@@ -68,9 +57,38 @@ wire TX;										//P22	-	Transmit
 
 //======================================================================//
 
+logic rx;
+logic UART_initialize;
+
+top#(
+	
+	.C_FAMILY("virtex6"),
+	.C_M_AXI_ACLK_FREQ_HZ(100000000),
+
+	.C_M_AXI_ADDR_WIDTH(4),
+	.C_M_AXI_DATA_WIDTH(32),
+	.C_M_AXI_PROTOCOL("AXI4LITE"),
+
+	.C_BAUDRATE(9600),
+	.C_DATA_BITS(8),
+	.C_USE_PARITY(0),
+	.C_ODD_PARITY(0),
+
+	//Embedded memory parameters
+	.MEMORY_ADDR_WIDTH(18),
+	.MEMORY_DATA_WIDTH(16)
+)
+top(
+
+	.clk(S_AXI_ACLK),
+	.resetn(S_AXI_ARESETN),
+
+	.RX(RX),
+	.UART_initialize(UART_initialize)
+);
 
 always begin
-	S_AXI_ACLK<=0; #5; S_AXI_ACLK<=1;
+	S_AXI_ACLK<=0; #1; S_AXI_ACLK<=1; #1;
 end
 
 

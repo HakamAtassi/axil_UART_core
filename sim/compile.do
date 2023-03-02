@@ -3,5 +3,6 @@ vlog -sv -work my_work +define+DISABLE_DEFAULT_NET +define+SIMULATION $rtl/UART/
 vlog -sv -work my_work +define+DISABLE_DEFAULT_NET +define+SIMULATION $rtl/AXI_UART.sv
 vlog -sv -work my_work +define+DISABLE_DEFAULT_NET +define+SIMULATION $rtl/top.sv
 
+vlog -sv -work my_work +define+DISABLE_DEFAULT_NET +define+SIMULATION $rtl/alexForAXI/axil_ram.v
 
 vlog -sv -work my_work +define+DISABLE_DEFAULT_NET $tb/axi_tb.sv
