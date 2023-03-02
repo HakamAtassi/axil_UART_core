@@ -31,9 +31,10 @@ module top
 
 );
 
+
+
 // =========================== MASTER SIGNALS =========================//
-
-
+// =========================== AXI_UART outputs =========================//
 
 
 
@@ -65,42 +66,32 @@ logic M_AXI_ARVALID;							//P15	-	Read Address Valid
 logic M_AXI_RREADY;								//P20	-	Read Ready
 
 
-logic TX;									//P22	-	Transmit (not used)
-logic UART_enable;							//TODO Output?
+logic TX;										//P22	-	Transmit (not used)
+logic UART_enable;								//TODO Output?
+
+
 // =========================== SLAVE SIGNALS =========================//
+// ========================== axil_ram outputs ========================//
 
 
 // WRITE ADDRESS CHANNEL
-wire [C_M_AXI_ADDR_WIDTH-1:0]  s_axil_awaddr;
-wire [2:0]             s_axil_awprot;	//Not used by UART
-wire                   s_axil_awvalid;
+wire [C_M_AXI_ADDR_WIDTH-1:0] s_axil_awaddr;
+wire s_axil_wready;
 
-// WRITE DATA CHANNEL
-wire [C_M_AXI_DATA_WIDTH-1:0]  s_axil_wdata;
-wire [C_M_AXI_DATA_WIDTH/8-1:0]  s_axil_wstrb;
-wire                   s_axil_wvalid;
+wire [1:0] s_axil_bresp;						
 
+wire [2:0] s_axil_awprot;
 
-// WRITE RESPONSE CHANNEL
-wire                   s_axil_bready;
+wire s_axil_awvalid;
 
+wire s_axil_bvalid;		
 
-// READ ADDRESS CHANNEL
-wire [C_M_AXI_ADDR_WIDTH-1:0]  s_axil_araddr;
-wire [2:0]             s_axil_arprot;	//Not used by UART
-wire                   s_axil_arvalid;
+wire s_axil_arready;
 
+wire [C_M_AXI_DATA_WIDTH-1:0] s_axil_rdata;
+wire [1:0] s_axil_rresp;
+wire s_axil_rvalid;
 
-// READ DATA CHANNEL
-wire                   s_axil_rready;
-
-
-wire [C_M_AXI_DATA_WIDTH-1:0] s_axil_rdata;	
-
-logic [1:0] s_axil_rresp;						//P18	-	Read Response (Faults/errors)
-
-wire [1:0] s_axil_bresp;						//P11	-	Write Response (Faults/errors)
-wire s_axil_bvalid;								//P12	-	Write Response Valid
 
 
 AXI_UART#(
@@ -177,37 +168,36 @@ axil_ram
     .rst(resetn),
 
 	// WRITE ADDRESS CHANNEL
-    .s_axil_awaddr(s_axil_awaddr),
+    .s_axil_awaddr(M_AXI_AWADDR),
     .s_axil_awprot(s_axil_awprot),	//Not used by UART
-    .s_axil_awvalid(s_axil_awvalid),
-    .s_axil_awready(S_AXI_AWREADY),
+    .s_axil_awvalid(M_AXI_AWVALID),
+    .s_axil_awready(s_axil_awready),
 
 	// WRITE DATA CHANNEL
-    .s_axil_wdata(s_axil_wdata),
-    .s_axil_wstrb(s_axil_wstrb),
-    .s_axil_wvalid(s_axil_wvalid),
-    .s_axil_wready(S_AXI_WREADY),
+    .s_axil_wdata(M_AXI_WDATA),
+    .s_axil_wstrb(M_AXI_WSTB),
+    .s_axil_wvalid(M_AXI_WAVALID),
+    .s_axil_wready(s_axil_wready),
 
 
 	// WRITE RESPONSE CHANNEL
     .s_axil_bresp(s_axil_bresp),
-    
-	.s_axil_bvalid(S_AXI_BVALID),
-    .s_axil_bready(s_axil_bready),
+	.s_axil_bvalid(s_axil_bv),
+    .s_axil_bready(M_AXI_BREADY),
 
 
 	// READ ADDRESS CHANNEL
-    .s_axil_araddr(s_axil_araddr),
-    .s_axil_arprot(s_axil_arprot),	//Not used by UART
-    .s_axil_arvalid(s_axil_arvalid),
-    .s_axil_arready(S_AXI_ARREADY),
+    .s_axil_araddr(M_AXI_ARADDR),
+    .s_axil_arprot(M_AXI_ARPROT),	//Not used by UART
+    .s_axil_arvalid(M_AXI_ARVALID),
+    .s_axil_arready(s_axil_arready),
 
 
 	// READ DATA CHANNEL
     .s_axil_rdata(s_axil_rdata),
     .s_axil_rresp(s_axil_rresp),
-    .s_axil_rvalid(S_AXI_RVALID),
-    .s_axil_rready(s_axil_rready)
+    .s_axil_rvalid(s_axil_rvalid),
+    .s_axil_rready(M_AXI_RREADY)
 );
 
 

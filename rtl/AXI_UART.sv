@@ -85,8 +85,8 @@ module AXI_UART
 	
 	//==========================UART INPUT SIGNALS================================
 	
-	input logic UART_initialize,						//TODO
-	output logic UART_enable							//TODO Output?
+	input logic UART_initialize,						//P23	-	TODO
+	output logic UART_enable							//P24	-	TODO Output?
 
 );
 
