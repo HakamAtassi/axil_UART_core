@@ -5,11 +5,11 @@
 // ================================================================================================================
 //																			
 //	  	  _____________________________		 ___      	 __________________________________      ________________
-//		 |		Embedded Mem		  |		|   |		|	             UART              | 	|				 |
+//		 |		AXI MASTER   		  |		|   |		|	             UART              | 	|				 |
 //		 |	 _______	  __________  |		|	|		|	 ___________      __________   |	|				 |
 //		 |	|		|	 |			| |		|	|		|	|			|	 |			|  |	|				 |
-//		 |	|		|    |			| |		| 	|		|	|			|	 |			|  |	|	Periphiral	 |
-//		 |	|  RAM  |<=> | S_AXI    | |<==>	|Bus| <==>	|	| M_AXI     | <= |   UART   |  | <= |	   (PC)   	 |
+//		 |	|		|    |			| |		| 	|		|	|			|	 |			|  |   	|	Host System	 |
+//		 |	|  CORE |<=> | M_AXI    | |<==>	|Bus| <==>	|	| S_AXI     | <= |   UART   |  | <=>|	   (PC)   	 |
 //		 |	|		|	 | Interface| |  	|   |		|	| Interface |	 |	 RX/TX  |  |	|				 |
 //		 |	|		|	 |			| |		|   |		|	|			|	 |          |  |	|				 |
 //		 |	|_______|	 |__________| |		|   |		|	|___________|    |__________|  |	|				 |
@@ -25,11 +25,11 @@ module AXI_UART
 #(
 
 	parameter C_FAMILY = "virtex6",
-	parameter C_M_AXI_ACLK_FREQ_HZ = 100000000,
+	parameter C_S_AXI_ACLK_FREQ_HZ = 100000000,
 	
-	parameter C_M_AXI_ADDR_WIDTH = 4,
-	parameter C_M_AXI_DATA_WIDTH = 32,
-	parameter C_M_AXI_PROTOCOL = "AXI4LITE",
+	parameter C_S_AXI_ADDR_WIDTH = 4,
+	parameter C_S_AXI_DATA_WIDTH = 32,
+	parameter C_S_AXI_PROTOCOL = "AXI4LITE",
 
 	parameter C_BAUDRATE = 9600,
 	parameter C_DATA_BITS = 8,
@@ -44,49 +44,49 @@ module AXI_UART
 (
 
 	// GLOBAL SIGNALS
-	input logic M_AXI_ACLK,								//P1	-	Clock
-	input logic M_AXI_ARESETN,							//P2	-	Reset (active low)
+	input logic S_AXI_ACLK,								//P1	-	Clock
+	input logic S_AXI_ARESETN,							//P2	-	Reset (active low)
 	output logic Interrupt,								//P3	-	Interrupt
 
 
 	// WRITE ADDRESS CHANNEL
-	output logic [C_M_AXI_ADDR_WIDTH-1:0] M_AXI_AWADDR,	//P4	-	Write Address
-	output logic M_AXI_AWVALID,							//P5	-	Write Valid
-	input logic M_AXI_AWREADY,							//P6	-	Write Ready
+	input logic [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_AWADDR,	//P4	-	Write Address
+	input logic S_AXI_AWVALID,							//P5	-	Write Valid
+	output logic S_AXI_AWREADY,							//P6	-	Write Ready
 
 
 	// WRITE DATA CHANNEL
-	output logic [C_M_AXI_DATA_WIDTH-1:0] M_AXI_WDATA,	//P7	-	Write Data
-	output logic [C_M_AXI_DATA_WIDTH/8-1:0] M_AXI_WSTB,	//P8	-	Write Data Strobes
-	output logic M_AXI_WAVALID,							//P9	-	Write Data Valid
-	input logic M_AXI_WREADY,							//P10	-	Write Data Ready
+	input logic [C_S_AXI_DATA_WIDTH-1:0] S_AXI_WDATA,	//P7	-	Write Data
+	input logic [C_S_AXI_DATA_WIDTH/8-1:0] S_AXI_WSTB,	//P8	-	Write Data Strobes
+	input logic S_AXI_WAVALID,							//P9	-	Write Data Valid
+	output logic S_AXI_WREADY,							//P10	-	Write Data Ready
 
 	
 	// WRITE RESPONSE CHANNEL
-	input logic [1:0] M_AXI_BRESP,						//P11	-	Write Response (Faults/errors)
-	input logic M_AXI_BVALID,							//P12	-	Write Response Valid
-	output logic M_AXI_BREADY,							//P13	-	Write Response Ready
+	output logic [1:0] S_AXI_BRESP,						//P11	-	Write Response (Faults/errors)
+	output logic S_AXI_BVALID,							//P12	-	Write Response Valid
+	input logic S_AXI_BREADY,							//P13	-	Write Response Ready
 
 	// READ ADDRESS CHANNEL
-	output logic [C_M_AXI_ADDR_WIDTH-1:0] M_AXI_ARADDR,	//P14	-	Read Address
-	output logic M_AXI_ARVALID,							//P15	-	Read Address Valid
-	input logic M_AXI_ARREADY,							//P16	-	Read Address Ready
+	input logic [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_ARADDR,	//P14	-	Read Address
+	input logic S_AXI_ARVALID,							//P15	-	Read Address Valid
+	output logic S_AXI_ARREADY,							//P16	-	Read Address Ready
 
 
 	// READ DATA CHANNEL
-	input logic [C_M_AXI_DATA_WIDTH-1:0] M_AXI_RDATA,	//P17	-	Read Data 
-	input logic [1:0] M_AXI_RRESP,						//P18	-	Read Response (Faults/errors)
-	input logic M_AXI_RVALID,							//P19	-	Read Valid
-	output logic M_AXI_RREADY,							//P20	-	Read Ready
+	output logic [C_S_AXI_DATA_WIDTH-1:0] S_AXI_RDATA,	//P17	-	Read Data 
+	output logic [1:0] S_AXI_RRESP,						//P18	-	Read Response (Faults/errors)
+	output logic S_AXI_RVALID,							//P19	-	Read Valid
+	input logic S_AXI_RREADY,							//P20	-	Read Ready
 
 
 	input logic UART_RX_I,								//P21 	-	input to UART from HOST
-	output logic TX,									//P22	-	Transmit (not used)
+	output logic TX,									//P22	-	Transmit 
 	
 	//==========================UART INPUT SIGNALS================================
 	
 	input logic UART_initialize,						//P23	-	TODO
-	output logic UART_enable							//P24	-	TODO Output?
+	output logic UART_enable							//P24	-	TODO 
 
 );
 
@@ -100,18 +100,22 @@ logic Initialize;
 
 
 logic write_valid;	// Is the current write data/address "AXI" valid	
-assign write_valid = M_AXI_AWVALID && M_AXI_WAVALID;	//TODO: missing signals?
+assign write_valid = S_AXI_AWVALID && S_AXI_WAVALID;	//TODO: missing signals?
 
 logic write_ready;	// Is the slave "AXI" ready for a write operation
-assign write_ready = M_AXI_AWREADY && M_AXI_WREADY;
+assign write_ready = S_AXI_AWREADY && S_AXI_WREADY;
+
+
 
 // UART reciever inst.
 // Recieves data from host PC/Periphiral through RX pin
 // Packs them into 2 byte packets
 // And writes data to SRAM
+
+/*
 UART_SRAM_interface UART_SRAM_interface (
-	.Clock(M_AXI_ACLK),
-	.Resetn(M_AXI_ARESETN), 
+	.Clock(S_AXI_ACLK),
+	.Resetn(S_AXI_ARESETN), 
 
 	.UART_RX_I(UART_RX_I),
 	.Initialize(UART_initialize),
@@ -122,14 +126,8 @@ UART_SRAM_interface UART_SRAM_interface (
 	.SRAM_we_n(SRAM_we_n),
 	.Frame_error(Frame_error)
 );
+*/
 
-
-//Notes: 
-//	- Back pressure
-//		- In the case where there is data that is ready to be written to the
-//			SRAM through the AXI interface, but the SRAM is not ready, some back
-//			pressure must be exerted on the UART to prevent it from recieving more
-//			data that cannot be used or stored.
 
 
 enum logic [3:0] {
@@ -141,27 +139,27 @@ enum logic [3:0] {
 
 
 
-always_ff @(posedge M_AXI_ACLK) begin
-	if(!M_AXI_ARESETN) begin
+always_ff @(posedge S_AXI_ACLK) begin
+	if(!S_AXI_ARESETN) begin
 		
 		//WRITE ADDRESS CHANNEL
-		M_AXI_AWADDR<={C_M_AXI_ADDR_WIDTH{0}}; 	//TODO: number of bits is a param??
-		M_AXI_AWVALID<=1'b0;
+		S_AXI_AWADDR<={C_S_AXI_ADDR_WIDTH{0}}; 	//TODO: number of bits is a param??
+		S_AXI_AWVALID<=1'b0;
 
 		//WRITE DATA CHANNEL
-		M_AXI_WDATA<=SRAM_write_data;
-		M_AXI_WSTB<={C_M_AXI_DATA_WIDTH{1}};	//Mask with all 1s (normal write, no strobe)
-		M_AXI_WAVALID<=1'b0;
+		S_AXI_WDATA<=SRAM_write_data;
+		S_AXI_WSTB<={C_S_AXI_DATA_WIDTH{1}};	//Mask with all 1s (normal write, no strobe)
+		S_AXI_WAVALID<=1'b0;
 
 		// WRITE RESPONSE CHANNEL
-		M_AXI_BREADY<=1'b0;	
+		S_AXI_BREADY<=1'b0;	
 
 		// READ ADDRESS CHANNEL
-		M_AXI_ARADDR<={C_M_AXI_ADDR_WIDTH{0}};
-		M_AXI_ARVALID<=1'b0;
+		S_AXI_ARADDR<={C_S_AXI_ADDR_WIDTH{0}};
+		S_AXI_ARVALID<=1'b0;
 
 		// READ DATA CHANNEL
-		M_AXI_RREADY<=1'b0;
+		S_AXI_RREADY<=1'b0;
 
 		
 
@@ -170,50 +168,12 @@ always_ff @(posedge M_AXI_ACLK) begin
 			
 			S_IDLE: begin
 				if(UART_enable==1'b1) begin		//Start UART transmission
-					S_AXI_UART<=S_RECIEVE_WORDS;
 				end
 			end
 
 			S_RECIEVE_WORDS: begin	//RX port open. UART recieving data
 
-				/** AXI MASTER LOGIC **/
-
-				// If write is valid and slave is ready => data can update
-				// If write is valid and slave is not ready => "Hold" data (TODO: How?? buffer?)
-				// If write is not valid and slave is ready	=> data can update
-				// If write is not valid and slave is not ready => data can update
-
-				
-				if(SRAM_we_n==1'b1) begin
-					M_AXI_AWVALID<=1'b1;
-					M_AXI_WAVALID<=1'b1;
-				end
-
-				if(write_valid==1'b1 && write_ready==1'b1) begin	//transaction ends when valid and ready	(for AXI lite)
-					M_AXI_AWVALID<=1'b0;
-					M_AXI_WAVALID<=1'b0;
-				end
-
-
-				if(!write_valid) begin	//TODO: make sure data is constant while valid is high
-					M_AXI_WDATA<=SRAM_write_data;
-					M_AXI_AWADDR<=SRAM_address;	
-				end
-
-				//TODO: Overrun? Backpressure?
-
-
-				if(SRAM_address=={MEMORY_ADDR_WIDTH{1}}) begin
-					S_AXI_UART<=S_IDLE;
-					// TODO: if the valids were just asserted but addresses
-					// but was on last address, infinite writes will occur...
-				end
-
-
-
-
 			end
-
 
 		endcase
 	end
