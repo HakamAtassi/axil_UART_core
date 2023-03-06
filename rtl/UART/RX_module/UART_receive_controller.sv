@@ -21,13 +21,29 @@ Ontario, Canada
 
 `include "define_state.h"
 
-// This module monitors the UART_RX pin, and assembles the serial data when enabled
+
+//sample at 16x the baudrate
+//sampling reg goes from 0->7, samples, then resets
+//then that same counter goes from 0->15, and when 15, it samples. 
+
+//ie: 
+
+//                       _____       _____
+//	     signal   ______/     \_____/     \_____...	
+//   sampling     ...^.....^.....^.....^.....^....
+
+
+
+
+
 module UART_receive_controller (
-	input logic Clock_50,
+	input logic clk,
 	input logic Resetn,
 	
 	input logic Enable,
 	input logic Unload_data,
+
+	input logic baud_timer_in
 	
 	output logic [7:0] RX_data,
 	output logic Empty,
@@ -46,7 +62,7 @@ logic [2:0] data_count;
 logic RX_data_in;
 
 // UART RX Logic
-always_ff @ (posedge Clock_50 or negedge Resetn) begin
+always_ff @ (posedge clk or negedge Resetn) begin
 	if (!Resetn) begin
 		data_buffer <= 8'h00;
 		RX_data <= 8'h00;

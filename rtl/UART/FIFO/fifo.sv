@@ -3,7 +3,7 @@ module fifo
 #(
     parameter DATA_WIDTH = 8,
     parameter DATA_DEPTH = 128,
-    parameter MEM_TYPE = 0      // 0=>regs, 1=>blockmem
+    parameter MEM_TYPE = 0      // 0->regs, 1->blockmem
 )
 (
 
