@@ -1,2 +1,5 @@
 ./rtl/alexForAXI
 /rtl/alexForAXI
+
+./tb/*.vcd
+/tb/*.vcd

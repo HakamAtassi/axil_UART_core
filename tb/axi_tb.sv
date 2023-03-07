@@ -20,7 +20,7 @@ parameter C_S_AXI_ADDR_WIDTH = 4;
 parameter C_S_AXI_DATA_WIDTH = 32;
 parameter C_S_AXI_PROTOCOL = "AXI4LITE";
 
-parameter C_BAUDRATE = 9600;
+parameter C_BAUDRATE = 115_200;
 parameter C_DATA_BITS = 8;
 parameter C_USE_PARITY = 0;
 parameter C_ODD_PARITY = 0;
@@ -67,6 +67,23 @@ logic [7:0] RX_data;
 logic [7:0] TX_data;
 
 
+
+// Transmit an 8 bit word to the UART  
+task transmit_word_uart(logic [7:0] rx_data);
+	RX<=1'b0;
+	repeat(4340) @(posedge S_AXI_ACLK);
+	for(int i=0;i<8;i=i+1) begin
+		RX<=rx_data[i];
+		repeat(4340) @(posedge S_AXI_ACLK);
+	end
+	RX<=1'b1;
+	repeat(4340) @(posedge S_AXI_ACLK);
+
+endtask
+
+
+
+
 UART
 #(
     .C_BAUDRATE(115_200),
@@ -100,16 +117,27 @@ UART(
 
 //======================================================================//
 
+initial begin
+	$dumpfile("axi_tb");
+	$dumpvars();
+end
+
 always begin
 	S_AXI_ACLK<=0; #1; S_AXI_ACLK<=1; #1;
 end
 
 
+initial begin
+
+	transmit_word_uart({8'b10101010});
+
+end
+
 
 
 initial begin
-	repeat(10000) @(posedge S_AXI_ACLK);
-	$display("Testbench duration exhausted (10,000 clocks) ");
+	repeat(100000) @(posedge S_AXI_ACLK);
+	$display("Testbench duration exhausted (100,000 clocks) ");
 	$finish;
 end
 
