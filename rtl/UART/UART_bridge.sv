@@ -3,7 +3,7 @@
 module bridge
 #(
     parameter C_BAUDRATE = 115_200,
-    parameter C_SYSTEM_FREQ = 50_000_000
+    parameter C_SYSTEM_FREQ = 100_000_000
 )
 (
     input logic Clk,
@@ -12,7 +12,9 @@ module bridge
     output logic baud_tick
 );
 
-parameter COUNTER_MAX = C_SYSTEM_FREQ / C_BAUDRATE;
+//parameter COUNTER_MAX = (C_SYSTEM_FREQ/2) / C_BAUDRATE / 16;
+parameter COUNTER_MAX = (C_SYSTEM_FREQ/2) / C_BAUDRATE / 16;
+
 parameter COUNTER_WIDTH = $clog2(COUNTER_MAX);
 
 //TODO: doesnt work with icarus

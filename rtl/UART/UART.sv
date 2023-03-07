@@ -55,7 +55,7 @@ logic Enable_tx;
 bridge	// Baudrate tick generator
 #(
 	.C_BAUDRATE(C_BAUDRATE),
-	.C_SYSTEM_FREQ(C_SYSTEM_FREQ)
+	.C_SYSTEM_FREQ(100_000_000)
 )
 UART_bridge
 (

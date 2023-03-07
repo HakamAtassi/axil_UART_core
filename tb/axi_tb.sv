@@ -93,7 +93,7 @@ endtask
 task read_word_uart;
 	if(!Empty) begin
 		rd_uart_en<=1'b1;
-		$display("Read UART Data: %0d", RX_data);
+		$display("Read UART Data: %0b", RX_data);
 		repeat(4340) @(posedge S_AXI_ACLK);	//TODO: is this right? should it not wait 1 clk?
 
 
@@ -174,7 +174,7 @@ initial begin
 	@(posedge S_AXI_ACLK);
 
 
-	transmit_word_uart({8'b01111110});
+	transmit_word_uart({8'b00000001});
 	transmit_word_uart({8'b01010101});
 	transmit_word_uart({8'b11111110});
 	transmit_word_uart({8'b11111111});

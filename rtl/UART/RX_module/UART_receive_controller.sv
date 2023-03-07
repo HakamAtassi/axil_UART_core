@@ -122,35 +122,38 @@ always_ff @ (posedge Clk or negedge Resetn) begin
 		end
 		S_RXC_SYNC: begin
 			// Sync the counter for the correct time to sample for UART data on the serial interface
-			if (clock_count == (`RX_CLOCK_RATE/2 - 2) && RX_data_in == 1'b0) begin
+			if ((tick_count == 4'd7) && RX_data_in == 1'b0) begin
 				// Finish sync process
 				clock_count <= 10'h000;
 				data_count <= 3'h0;
 				data_buffer <= 8'h00;
+				tick_count<=4'b0;
 				RXC_state <= S_RXC_ASSEMBLE_DATA;
 			end else begin
 				// If the Start bit does not stay on 1'b0 during synchronization
 				// it will fail this sync process			
-				if (RX_data_in == 1'b0) clock_count <= clock_count + 10'h001;
-				else RXC_state <= S_RXC_IDLE;
+				if (RX_data_in == 1'b0 && baud_tick==1'b1) tick_count <= tick_count + 4'b001;
+				//else RXC_state <= S_RXC_IDLE;
 			end
 		end
 		S_RXC_ASSEMBLE_DATA: begin
 			// Assembling the 8 bit serial data onto data buffer
-			if (clock_count == (`RX_CLOCK_RATE-1)) begin
+			if (tick_count == 4'd14) begin
 				// Only sample the data at the middle of transmission
 				data_buffer <= {RX_data_in, data_buffer[7:1]};
-				clock_count <= 10'h000; 
+				tick_count <= 4'b0; 
 				if (data_count == 3'h7) 
 					// Finish assembling the 8 bit data
 					RXC_state <= S_RXC_STOP_BIT;
 				else data_count <= data_count + 3'h1;   
-			end else 
-				clock_count <= clock_count + 10'h001;
+			end else begin
+				if(baud_tick ==1'b1)
+					tick_count <= tick_count + 4'b1;
+			end
 		end
 		S_RXC_STOP_BIT: begin
 			// Sample for stop bit here
-			if (clock_count == (`RX_CLOCK_RATE-1)) begin
+			if (tick_count == 4'd14) begin
 				RXC_state <= S_RXC_IDLE;
 				if (RX_data_in == 1'b0) begin
 					// If stop bit is not 1'b1, this 8 bit data is corrupted
@@ -165,8 +168,10 @@ always_ff @ (posedge Clk or negedge Resetn) begin
 					// Put the new data to the output
 					RX_data  <= data_buffer;
 				end
-			end else 
-				clock_count <= clock_count + 10'h001;
+			end else begin
+				if(baud_tick ==1'b1)
+						tick_count <= tick_count + 4'b1;
+			end
 		end
 		default: RXC_state <= S_RXC_IDLE;
 		endcase
