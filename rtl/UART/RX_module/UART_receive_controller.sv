@@ -37,7 +37,13 @@ Ontario, Canada
 
 
 
-module UART_receive_controller (
+module UART_receive_controller #
+(
+    parameter C_BAUDRATE = 115_200,
+    parameter C_SYSTEM_FREQ = 50_000_000
+)
+
+(
 	input logic Clk,
 	input logic Resetn,
 	
@@ -55,6 +61,13 @@ module UART_receive_controller (
 	input logic UART_RX_I
 );
 
+
+parameter COUNTER_MAX = C_SYSTEM_FREQ / C_BAUDRATE;
+parameter COUNTER_WIDTH = $clog2(COUNTER_MAX);
+
+reg [3:0] tick_count;
+
+
 //RX_Controller_state_type RXC_state;
 
 logic [7:0] data_buffer;
@@ -71,6 +84,7 @@ enum logic [1:0] {
 } RXC_state;
 
 
+
 // UART RX Logic
 always_ff @ (posedge Clk or negedge Resetn) begin
 	if (!Resetn) begin
@@ -83,6 +97,8 @@ always_ff @ (posedge Clk or negedge Resetn) begin
 		Empty <= 1'b1;
 		RXC_state <= S_RXC_IDLE;
 		RX_data_in <= 1'b0;
+
+		tick_count<=1'b0;
 	end else begin
 		// Synchronize the asynch signal
 		RX_data_in <= UART_RX_I;

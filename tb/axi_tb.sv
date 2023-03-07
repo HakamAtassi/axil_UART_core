@@ -63,24 +63,47 @@ logic RX;										//P21	-	Recieve
 wire TX;										//P22	-	Transmit
 
 
+//FPGA signals
+logic Clk_50M;
+
+
+
 logic [7:0] RX_data;
 logic [7:0] TX_data;
 
+logic rd_uart_en;
 
 
 // Transmit an 8 bit word to the UART  
 task transmit_word_uart(logic [7:0] rx_data);
 	RX<=1'b0;
+	Enable_rx<=1'b1;
+
 	repeat(4340) @(posedge S_AXI_ACLK);
 	for(int i=0;i<8;i=i+1) begin
-		RX<=rx_data[i];
+		RX<=rx_data[0];
+		rx_data<=rx_data>>1;
 		repeat(4340) @(posedge S_AXI_ACLK);
 	end
 	RX<=1'b1;
 	repeat(4340) @(posedge S_AXI_ACLK);
+endtask
+
+//Empty UART rx buffer (print to console)
+task read_word_uart;
+	if(!Empty) begin
+		rd_uart_en<=1'b1;
+		$display("Read UART Data: %0d", RX_data);
+		repeat(4340) @(posedge S_AXI_ACLK);	//TODO: is this right? should it not wait 1 clk?
+
+
+		rd_uart_en<=1'b0;
+	end
+	//repeat(1) @(posedge S_AXI_ACLK);
 
 endtask
 
+logic Enable_rx;
 
 
 
@@ -90,12 +113,14 @@ UART
     .C_SYSTEM_FREQ(50_000_000)
 )
 UART(
-    .Clk(S_AXI_ACLK),                   // P0 
+    .Clk(Clk_50M),                   // P0 
     .Resetn(S_AXI_ARESETN),             // P1
 
      // RX signals
     .RX(RX),                    		// P2   -   RX pin
     .rd_uart_en(rd_uart_en),            // P3   -   Signal a read from UART
+    .Enable_rx(Enable_rx),
+
 
     .RX_data(RX_data),        			// P4   -   UART read data from RX
     .Empty(Empty),                		// P5   -   UART read fifo empty
@@ -126,18 +151,52 @@ always begin
 	S_AXI_ACLK<=0; #1; S_AXI_ACLK<=1; #1;
 end
 
+always begin
+	Clk_50M<=0;	#10; Clk_50M<=1; #10;
+end
 
 initial begin
-
-	transmit_word_uart({8'b10101010});
+	RX<=1'b1;
+	Enable_rx<=1'b0;
+	S_AXI_ARESETN<=1'b1;
+	@(posedge S_AXI_ACLK);
+	S_AXI_ARESETN<=1'b0;
+	@(posedge S_AXI_ACLK);
+	S_AXI_ARESETN<=1'b1;
 
 end
 
 
 
+
 initial begin
-	repeat(100000) @(posedge S_AXI_ACLK);
-	$display("Testbench duration exhausted (100,000 clocks) ");
+	@(posedge S_AXI_ACLK);
+	@(posedge S_AXI_ACLK);
+
+
+	transmit_word_uart({8'b01111110});
+	transmit_word_uart({8'b01010101});
+	transmit_word_uart({8'b11111110});
+	transmit_word_uart({8'b11111111});
+	transmit_word_uart({8'b00110011});
+	transmit_word_uart({8'b01001000});
+	transmit_word_uart({8'b10000001});
+	transmit_word_uart({8'b01000010});
+
+
+end
+
+always begin 
+	@(posedge S_AXI_ACLK);
+	@(posedge S_AXI_ACLK);
+	read_word_uart;
+	@(posedge S_AXI_ACLK);
+end
+
+
+initial begin
+	repeat(10000000) @(posedge S_AXI_ACLK);
+	$display("Testbench duration exhausted (10,000,000 clocks) ");
 	$finish;
 end
 

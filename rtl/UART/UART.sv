@@ -8,22 +8,24 @@ module UART
     parameter C_SYSTEM_FREQ = 50_000_000
 )
 (
-    input logic Clk,                   // P0 
-    input logic Resetn,                // P1
+    input logic Clk,                 
+    input logic Resetn,            
 
     // RX signals
-    input logic RX,                    // P2   -   RX pin
-    input logic rd_uart_en,            // P3   -   Signal a read from UART
+    input logic RX,                   
+    input logic rd_uart_en,        
+    input logic Enable_rx,
 
-    output logic [7:0] RX_data,        // P4   -   UART read data from RX
-    output logic Empty,                // P5   -   UART read fifo empty
+
+    output logic [7:0] RX_data,       
+    output logic Empty,            
 
     // TX signals
-    input logic [7:0] TX_data,         // P6   -   UART write data to TX
-    input logic wr_uart_en,            // P7   -   UART write enable
+    input logic [7:0] TX_data,       
+    input logic wr_uart_en,            
 
-    output logic Full,                 // P8   -   UART write fifo full
-    output logic TX                   // P9   -   TX pin
+    output logic Full,            
+    output logic TX                 
 
 );
 
@@ -34,8 +36,6 @@ module UART
 logic baud_tick;
 
 //UART reciever internal signals
-logic Enable_rx;
-logic Unload_data;	//basically the done signal
 
 logic baud_timer_in;
 
@@ -71,7 +71,7 @@ UART_receive_controller UART_receive_controller (
 	.Resetn(Resetn),
 	
 	.Enable(Enable_rx),
-	.Unload_data(Unload_data),
+	.Unload_data(rd_uart_en),
 
 	.baud_tick(baud_tick),
 	

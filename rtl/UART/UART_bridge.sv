@@ -15,7 +15,7 @@ module bridge
 parameter COUNTER_MAX = C_SYSTEM_FREQ / C_BAUDRATE;
 parameter COUNTER_WIDTH = $clog2(COUNTER_MAX);
 
-
+//TODO: doesnt work with icarus
 `ifdef SIMULATION             // note: we must adjust the TB as well
   `define RX_CLOCK_RATE 10'd6 // this is approx 7 pulses at 57.6 MHz 
  `else
@@ -25,11 +25,18 @@ parameter COUNTER_WIDTH = $clog2(COUNTER_MAX);
 reg [(COUNTER_WIDTH-1):0] baud_counter;
 
 always_ff @(posedge Clk, negedge Resetn) begin
-    baud_counter<=baud_counter+1;
-    baud_tick<=1'b0;
 
-    if(baud_counter==(COUNTER_MAX-1))
-        baud_tick<=1'b1;
+    if(!Resetn) begin
+        baud_counter<={(COUNTER_WIDTH-1){1'b0}};
+    end else begin
+        baud_counter<=baud_counter+1;
+        baud_tick<=1'b0;
+
+        if(baud_counter==(COUNTER_MAX-1))
+            baud_tick<=1'b1;
+    end
+
+    
 end
 
 

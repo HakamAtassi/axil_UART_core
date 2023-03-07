@@ -1,0 +1,41 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Tue Mar  7 04:08:30 2023
+[*]
+[dumpfile] "/home/hakam/Repos/axil_UART_core/tb/axi_tb.vcd"
+[dumpfile_mtime] "Tue Mar  7 04:08:13 2023"
+[dumpfile_size] 275282291
+[savefile] "/home/hakam/Repos/axil_UART_core/tb/UART_core_gtk.gtkw"
+[timestart] 0
+[size] 1323 686
+[pos] -1 -1
+*-25.872761 64800000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] axi_tb.
+[treeopen] axi_tb.UART.
+[sst_width] 327
+[signals_width] 292
+[sst_expanded] 1
+[sst_vpaned_height] 167
+@28
+axi_tb.S_AXI_ACLK
+@200
+-Send Function Signals
+@420
+axi_tb.transmit_word_uart.i
+@22
+axi_tb.transmit_word_uart.rx_data[7:0]
+@200
+-UART RX signals
+@28
+axi_tb.Clk_50M
+axi_tb.UART.UART_receive_controller.Enable
+axi_tb.UART.UART_receive_controller.RXC_state[1:0]
+axi_tb.UART.UART_receive_controller.UART_RX_I
+axi_tb.UART.UART_receive_controller.data_buffer[7:0]
+@22
+axi_tb.UART.UART_receive_controller.RX_data[7:0]
+@28
+axi_tb.UART.UART_receive_controller.Unload_data
+axi_tb.UART.UART_receive_controller.Empty
+[pattern_trace] 1
+[pattern_trace] 0
