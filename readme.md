@@ -1,4 +1,19 @@
-# Notes
+# TODO
+* Integrate baud bridge
+* Wrap with AXI interface
+* AXI bursts?
+* Wrap in TileLink
+
+
+
+
+
+
+
+
+
+
+# Notes (currently for personal reference)
 
 The logic is of data transfers is the following:
 
