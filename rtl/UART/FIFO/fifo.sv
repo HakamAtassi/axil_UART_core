@@ -7,8 +7,8 @@ module fifo
 )
 (
 
-    input clk,
-    input resetn,
+    input Clk,
+    input Resetn,
 
     input logic [(DATA_WIDTH-1):0] data_in,
     input logic wr_en,

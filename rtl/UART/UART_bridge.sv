@@ -2,14 +2,14 @@
 
 module bridge
 #(
-    parameter C_BAUDRATE = 115200,
+    parameter C_BAUDRATE = 115_200,
     parameter C_SYSTEM_FREQ = 50_000_000
 )
 (
-    input clk,
-    input resetn,
+    input logic Clk,
+    input logic Resetn,
 
-    output baud_tick
+    output logic baud_tick
 );
 
 parameter COUNTER_MAX = C_SYSTEM_FREQ / C_BAUDRATE;
@@ -24,11 +24,11 @@ parameter COUNTER_WIDTH = $clog2(COUNTER_MAX);
 
 reg [(COUNTER_WIDTH-1):0] baud_counter;
 
-always_ff @(posedge clk, negedge resetn) begin
+always_ff @(posedge Clk, negedge Resetn) begin
     baud_counter<=baud_counter+1;
     baud_tick<=1'b0;
 
-    if(baud_counter=COUNTER_MAX-1)
+    if(baud_counter==(COUNTER_MAX-1))
         baud_tick<=1'b1;
 end
 

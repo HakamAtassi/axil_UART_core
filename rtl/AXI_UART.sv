@@ -80,7 +80,7 @@ module AXI_UART
 	input logic S_AXI_RREADY,							//P20	-	Read Ready
 
 
-	input logic UART_RX_I,								//P21 	-	input to UART from HOST
+	input logic RX,								//P21 	-	input to UART from HOST
 	output logic TX,									//P22	-	Transmit 
 	
 	//==========================UART INPUT SIGNALS================================
@@ -99,43 +99,11 @@ logic Initialize;
 
 
 
-logic write_valid;	// Is the current write data/address "AXI" valid	
-assign write_valid = S_AXI_AWVALID && S_AXI_WAVALID;	//TODO: missing signals?
-
-logic write_ready;	// Is the slave "AXI" ready for a write operation
-assign write_ready = S_AXI_AWREADY && S_AXI_WREADY;
-
-
-
-// UART reciever inst.
-// Recieves data from host PC/Periphiral through RX pin
-// Packs them into 2 byte packets
-// And writes data to SRAM
-
-/*
-UART_SRAM_interface UART_SRAM_interface (
-	.Clock(S_AXI_ACLK),
-	.Resetn(S_AXI_ARESETN), 
-
-	.UART_RX_I(UART_RX_I),
-	.Initialize(UART_initialize),
-	.Enable(UART_enable),
-   
-	.SRAM_address(SRAM_address),
-	.SRAM_write_data(SRAM_write_data),
-	.SRAM_we_n(SRAM_we_n),
-	.Frame_error(Frame_error)
-);
-*/
-
-
 
 enum logic [3:0] {
 	S_IDLE,
 	S_RECIEVE_WORDS	//TODO: Parameterize word size
 } S_AXI_UART;
-
-
 
 
 

@@ -1,5 +1,12 @@
 `timescale 1ns/100ps
 
+`include "../rtl/UART/UART.sv"
+`include "../rtl/UART/UART_bridge.sv"
+
+
+
+
+
 module axi_tb;
 
 initial $display("Running axi_tb.sv");
@@ -55,37 +62,43 @@ logic S_AXI_RREADY;								//P20	-	Read Ready
 logic RX;										//P21	-	Recieve 
 wire TX;										//P22	-	Transmit
 
-//======================================================================//
 
-logic rx;
-logic UART_initialize;
+logic [7:0] RX_data;
+logic [7:0] TX_data;
 
-top#(
-	
-	.C_FAMILY("virtex6"),
-	.C_M_AXI_ACLK_FREQ_HZ(100000000),
 
-	.C_M_AXI_ADDR_WIDTH(4),
-	.C_M_AXI_DATA_WIDTH(32),
-	.C_M_AXI_PROTOCOL("AXI4LITE"),
-
-	.C_BAUDRATE(9600),
-	.C_DATA_BITS(8),
-	.C_USE_PARITY(0),
-	.C_ODD_PARITY(0),
-
-	//Embedded memory parameters
-	.MEMORY_ADDR_WIDTH(18),
-	.MEMORY_DATA_WIDTH(16)
+UART
+#(
+    .C_BAUDRATE(115_200),
+    .C_SYSTEM_FREQ(50_000_000)
 )
-top(
+UART(
+    .Clk(S_AXI_ACLK),                   // P0 
+    .Resetn(S_AXI_ARESETN),             // P1
 
-	.clk(S_AXI_ACLK),
-	.resetn(S_AXI_ARESETN),
+     // RX signals
+    .RX(RX),                    		// P2   -   RX pin
+    .rd_uart_en(rd_uart_en),            // P3   -   Signal a read from UART
 
-	.RX(RX),
-	.UART_initialize(UART_initialize)
+    .RX_data(RX_data),        			// P4   -   UART read data from RX
+    .Empty(Empty),                		// P5   -   UART read fifo empty
+
+    // TX signals
+   	.TX_data(TX_data),         			// P6   -   UART write data to TX
+    .wr_uart_en(wr_uart_en),            // P7   -   UART write enable
+
+    .Full(Full),                 		// P8   -   UART write fifo full
+    .TX(TX)                   			// P9   -   TX pin
+
 );
+
+
+
+
+
+
+
+//======================================================================//
 
 always begin
 	S_AXI_ACLK<=0; #1; S_AXI_ACLK<=1; #1;
@@ -94,12 +107,10 @@ end
 
 
 
-
-
 initial begin
 	repeat(10000) @(posedge S_AXI_ACLK);
 	$display("Testbench duration exhausted (10,000 clocks) ");
-	$stop;
+	$finish;
 end
 
 endmodule

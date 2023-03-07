@@ -6,10 +6,11 @@ Ontario, Canada
 */
 
 //`timescale 1ns/100ps
+/*
 `ifndef DISABLE_DEFAULT_NET
 `default_nettype none
 `endif
-
+*/
 // by enabling lower RX_CLOCK_RATE in simulation we can speed-up the verification
 // note: the generator of UART bits in the testbench (TB) will need to be adjusted
 
@@ -19,7 +20,7 @@ Ontario, Canada
   `define RX_CLOCK_RATE 10'd434
 `endif
 
-`include "define_state.h"
+//`include "define_state.h"
 
 
 //sample at 16x the baudrate
@@ -37,13 +38,13 @@ Ontario, Canada
 
 
 module UART_receive_controller (
-	input logic clk,
+	input logic Clk,
 	input logic Resetn,
 	
 	input logic Enable,
 	input logic Unload_data,
 
-	input logic baud_timer_in
+	input logic baud_tick,
 	
 	output logic [7:0] RX_data,
 	output logic Empty,
@@ -54,15 +55,24 @@ module UART_receive_controller (
 	input logic UART_RX_I
 );
 
-RX_Controller_state_type RXC_state;
+//RX_Controller_state_type RXC_state;
 
 logic [7:0] data_buffer;
 logic [9:0] clock_count;
 logic [2:0] data_count;
 logic RX_data_in;
 
+
+enum logic [1:0] {
+	S_RXC_IDLE,
+	S_RXC_SYNC,
+	S_RXC_ASSEMBLE_DATA,
+	S_RXC_STOP_BIT
+} RXC_state;
+
+
 // UART RX Logic
-always_ff @ (posedge clk or negedge Resetn) begin
+always_ff @ (posedge Clk or negedge Resetn) begin
 	if (!Resetn) begin
 		data_buffer <= 8'h00;
 		RX_data <= 8'h00;
