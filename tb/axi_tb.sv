@@ -93,9 +93,8 @@ endtask
 task read_word_uart;
 	if(!Empty) begin
 		rd_uart_en<=1'b1;
-		$display("Read UART Data: %0b", RX_data);
+		$display("Read UART Data: %0d", RX_data);
 		repeat(4340) @(posedge S_AXI_ACLK);	//TODO: is this right? should it not wait 1 clk?
-
 
 		rd_uart_en<=1'b0;
 	end
@@ -113,7 +112,7 @@ UART
     .C_SYSTEM_FREQ(50_000_000)
 )
 UART(
-    .Clk(Clk_50M),                   // P0 
+    .Clk(Clk_50M),                   	// P0 
     .Resetn(S_AXI_ARESETN),             // P1
 
      // RX signals
@@ -136,7 +135,13 @@ UART(
 
 
 
+logic [7:0] testMem [512];
 
+initial begin
+	for(int i=0;i<512;i=i+1) begin
+		testMem[i]=i;
+	end
+end
 
 
 
@@ -159,7 +164,6 @@ initial begin
 	RX<=1'b1;
 	Enable_rx<=1'b0;
 	S_AXI_ARESETN<=1'b1;
-	@(posedge S_AXI_ACLK);
 	S_AXI_ARESETN<=1'b0;
 	@(posedge S_AXI_ACLK);
 	S_AXI_ARESETN<=1'b1;
@@ -169,20 +173,29 @@ end
 
 
 
+
+
 initial begin
 	@(posedge S_AXI_ACLK);
 	@(posedge S_AXI_ACLK);
 
+	for(int i=0;i<512;i=i+1) begin
+		transmit_word_uart(testMem[i]);
+	end
 
-	transmit_word_uart({8'b00000001});
+/*
 	transmit_word_uart({8'b01010101});
-	transmit_word_uart({8'b11111110});
-	transmit_word_uart({8'b11111111});
-	transmit_word_uart({8'b00110011});
-	transmit_word_uart({8'b01001000});
-	transmit_word_uart({8'b10000001});
-	transmit_word_uart({8'b01000010});
-
+	transmit_word_uart({8'b01010101});
+	transmit_word_uart({8'b01010101});
+	transmit_word_uart({8'b01010101});
+	transmit_word_uart({8'd1});
+	transmit_word_uart({8'd2});
+	transmit_word_uart({8'd3});
+	transmit_word_uart({8'd4});
+	transmit_word_uart({8'd5});
+	transmit_word_uart({8'd6});
+	transmit_word_uart({8'd7});
+*/
 
 end
 
@@ -195,7 +208,7 @@ end
 
 
 initial begin
-	repeat(10000000) @(posedge S_AXI_ACLK);
+	repeat(100000000) @(posedge S_AXI_ACLK);
 	$display("Testbench duration exhausted (10,000,000 clocks) ");
 	$finish;
 end

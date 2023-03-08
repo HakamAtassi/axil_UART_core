@@ -30,12 +30,18 @@ always_ff @(posedge Clk, negedge Resetn) begin
 
     if(!Resetn) begin
         baud_counter<={(COUNTER_WIDTH-1){1'b0}};
+        baud_tick<=1'b0;
     end else begin
         baud_counter<=baud_counter+1;
         baud_tick<=1'b0;
 
-        if(baud_counter==(COUNTER_MAX-1))
+        if(baud_counter==(COUNTER_MAX)) begin
             baud_tick<=1'b1;
+            baud_counter<={(COUNTER_WIDTH-1){1'b0}};
+
+        end
+
+        
     end
 
     

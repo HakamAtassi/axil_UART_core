@@ -117,12 +117,13 @@ always_ff @ (posedge Clk or negedge Resetn) begin
 					data_count <= 3'h0;
 					Frame_error  <= 1'b0;
 					Overrun   <= 1'b0;
+					tick_count<=4'd0;
 				end
 			end
 		end
 		S_RXC_SYNC: begin
 			// Sync the counter for the correct time to sample for UART data on the serial interface
-			if ((tick_count == 4'd7) && RX_data_in == 1'b0) begin
+			if ((tick_count == 4'd7 && baud_tick==1'b1 ) && RX_data_in == 1'b0) begin
 				// Finish sync process
 				clock_count <= 10'h000;
 				data_count <= 3'h0;
@@ -138,7 +139,7 @@ always_ff @ (posedge Clk or negedge Resetn) begin
 		end
 		S_RXC_ASSEMBLE_DATA: begin
 			// Assembling the 8 bit serial data onto data buffer
-			if (tick_count == 4'd14) begin
+			if (tick_count == 4'd15 && baud_tick==1'b1) begin
 				// Only sample the data at the middle of transmission
 				data_buffer <= {RX_data_in, data_buffer[7:1]};
 				tick_count <= 4'b0; 
@@ -153,7 +154,7 @@ always_ff @ (posedge Clk or negedge Resetn) begin
 		end
 		S_RXC_STOP_BIT: begin
 			// Sample for stop bit here
-			if (tick_count == 4'd14) begin
+			if (tick_count == 4'd15 && baud_tick==1'b1) begin
 				RXC_state <= S_RXC_IDLE;
 				if (RX_data_in == 1'b0) begin
 					// If stop bit is not 1'b1, this 8 bit data is corrupted
