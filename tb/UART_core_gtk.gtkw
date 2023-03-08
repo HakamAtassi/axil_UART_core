@@ -1,21 +1,21 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Wed Mar  8 04:00:35 2023
+[*] Wed Mar  8 05:40:15 2023
 [*]
 [dumpfile] "/home/hakam/Repos/axil_UART_core/tb/axi_tb.vcd"
-[dumpfile_mtime] "Wed Mar  8 04:00:12 2023"
-[dumpfile_size] 283151503
+[dumpfile_mtime] "Wed Mar  8 05:37:06 2023"
+[dumpfile_size] 948771881
 [savefile] "/home/hakam/Repos/axil_UART_core/tb/UART_core_gtk.gtkw"
 [timestart] 0
-[size] 1323 686
+[size] 1920 1043
 [pos] -1 -1
-*-25.872761 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-22.872761 7870000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] axi_tb.
 [treeopen] axi_tb.UART.
 [sst_width] 327
 [signals_width] 292
 [sst_expanded] 1
-[sst_vpaned_height] 167
+[sst_vpaned_height] 287
 @28
 axi_tb.S_AXI_ACLK
 @200
@@ -30,7 +30,12 @@ axi_tb.transmit_word_uart.rx_data[7:0]
 axi_tb.Clk_50M
 axi_tb.UART.UART_receive_controller.Enable
 axi_tb.UART.UART_receive_controller.RXC_state[1:0]
+@24
+axi_tb.UART.UART_receive_controller.tick_count[3:0]
+axi_tb.UART.UART_receive_controller.data_count[2:0]
+@28
 axi_tb.UART.UART_receive_controller.UART_RX_I
+@29
 axi_tb.UART.UART_receive_controller.data_buffer[7:0]
 @22
 axi_tb.UART.UART_receive_controller.RX_data[7:0]
@@ -42,9 +47,8 @@ axi_tb.UART.UART_receive_controller.Empty
 @28
 axi_tb.UART.UART_bridge.Clk
 axi_tb.UART.UART_bridge.Resetn
-@22
-axi_tb.UART.UART_bridge.baud_counter[4:0]
-@28
 axi_tb.UART.UART_bridge.baud_tick
+@24
+axi_tb.UART.UART_bridge.baud_counter[4:0]
 [pattern_trace] 1
 [pattern_trace] 0

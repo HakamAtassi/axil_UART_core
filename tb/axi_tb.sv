@@ -9,6 +9,9 @@
 
 module axi_tb;
 
+
+
+
 initial $display("Running axi_tb.sv");
 
 
@@ -20,7 +23,7 @@ parameter C_S_AXI_ADDR_WIDTH = 4;
 parameter C_S_AXI_DATA_WIDTH = 32;
 parameter C_S_AXI_PROTOCOL = "AXI4LITE";
 
-parameter C_BAUDRATE = 115_200;
+parameter C_BAUDRATE = 57600;
 parameter C_DATA_BITS = 8;
 parameter C_USE_PARITY = 0;
 parameter C_ODD_PARITY = 0;
@@ -73,20 +76,26 @@ logic [7:0] TX_data;
 
 logic rd_uart_en;
 
+parameter BAUD_IN_CLOCKS_500M = (500_000_000/C_BAUDRATE);
+
+initial begin
+	$display("BAUD IN CLOCKS %0d", BAUD_IN_CLOCKS_500M);
+end
+
 
 // Transmit an 8 bit word to the UART  
 task transmit_word_uart(logic [7:0] rx_data);
 	RX<=1'b0;
 	Enable_rx<=1'b1;
 
-	repeat(4340) @(posedge S_AXI_ACLK);
+	repeat(BAUD_IN_CLOCKS_500M) @(posedge S_AXI_ACLK);
 	for(int i=0;i<8;i=i+1) begin
 		RX<=rx_data[0];
 		rx_data<=rx_data>>1;
-		repeat(4340) @(posedge S_AXI_ACLK);
+		repeat(BAUD_IN_CLOCKS_500M) @(posedge S_AXI_ACLK);
 	end
 	RX<=1'b1;
-	repeat(4340) @(posedge S_AXI_ACLK);
+	repeat(BAUD_IN_CLOCKS_500M) @(posedge S_AXI_ACLK);
 endtask
 
 //Empty UART rx buffer (print to console)
@@ -108,7 +117,7 @@ logic Enable_rx;
 
 UART
 #(
-    .C_BAUDRATE(115_200),
+    .C_BAUDRATE(C_BAUDRATE),
     .C_SYSTEM_FREQ(50_000_000)
 )
 UART(
