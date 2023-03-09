@@ -3,13 +3,7 @@
 `include "../rtl/UART/UART.sv"
 `include "../rtl/UART/UART_bridge.sv"
 
-
-
-
-
 module axi_tb;
-
-
 
 
 initial $display("Running axi_tb.sv");
@@ -23,7 +17,7 @@ parameter C_S_AXI_ADDR_WIDTH = 4;
 parameter C_S_AXI_DATA_WIDTH = 32;
 parameter C_S_AXI_PROTOCOL = "AXI4LITE";
 
-parameter C_BAUDRATE = 57600;
+parameter C_BAUDRATE = 115_200;
 parameter C_DATA_BITS = 8;
 parameter C_USE_PARITY = 0;
 parameter C_ODD_PARITY = 0;
@@ -66,6 +60,9 @@ logic RX;										//P21	-	Recieve
 wire TX;										//P22	-	Transmit
 
 
+logic Enable_rx;
+logic Enable_tx;
+
 //FPGA signals
 logic Clk_50M;
 
@@ -84,7 +81,7 @@ end
 
 
 // Transmit an 8 bit word to the UART  
-task transmit_word_uart(logic [7:0] rx_data);
+task transmit_word_to_uart(logic [7:0] rx_data);
 	RX<=1'b0;
 	Enable_rx<=1'b1;
 
@@ -97,6 +94,21 @@ task transmit_word_uart(logic [7:0] rx_data);
 	RX<=1'b1;
 	repeat(BAUD_IN_CLOCKS_500M) @(posedge S_AXI_ACLK);
 endtask
+
+
+//pass word to uart and output serially to TX pin
+task recieve_word_from_uart(logic [7:0] tx_data);
+	Enable_tx<=1'b1;
+	TX_data<=tx_data;
+	@(posedge S_AXI_ACLK);
+	//Enable_tx<=1'b0;
+
+
+endtask
+
+
+
+
 
 //Empty UART rx buffer (print to console)
 task read_word_uart;
@@ -111,7 +123,7 @@ task read_word_uart;
 
 endtask
 
-logic Enable_rx;
+
 
 
 
@@ -135,6 +147,7 @@ UART(
 
     // TX signals
    	.TX_data(TX_data),         			// P6   -   UART write data to TX
+	.Enable_tx(Enable_tx),
     .wr_uart_en(wr_uart_en),            // P7   -   UART write enable
 
     .Full(Full),                 		// P8   -   UART write fifo full
@@ -176,36 +189,16 @@ initial begin
 	S_AXI_ARESETN<=1'b0;
 	@(posedge S_AXI_ACLK);
 	S_AXI_ARESETN<=1'b1;
-
 end
-
-
-
-
-
 
 initial begin
 	@(posedge S_AXI_ACLK);
 	@(posedge S_AXI_ACLK);
-
 	for(int i=0;i<512;i=i+1) begin
-		transmit_word_uart(testMem[i]);
+		//transmit_word_to_uart(testMem[i]);
+		transmit_word_to_uart({8'b10000001});
+
 	end
-
-/*
-	transmit_word_uart({8'b01010101});
-	transmit_word_uart({8'b01010101});
-	transmit_word_uart({8'b01010101});
-	transmit_word_uart({8'b01010101});
-	transmit_word_uart({8'd1});
-	transmit_word_uart({8'd2});
-	transmit_word_uart({8'd3});
-	transmit_word_uart({8'd4});
-	transmit_word_uart({8'd5});
-	transmit_word_uart({8'd6});
-	transmit_word_uart({8'd7});
-*/
-
 end
 
 always begin 
@@ -214,6 +207,18 @@ always begin
 	read_word_uart;
 	@(posedge S_AXI_ACLK);
 end
+
+
+// test TX module
+
+
+always begin
+	@(posedge S_AXI_ACLK);
+	@(posedge S_AXI_ACLK);
+	recieve_word_from_uart({8'b01010101});
+
+end
+
 
 
 initial begin

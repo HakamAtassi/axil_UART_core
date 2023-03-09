@@ -65,7 +65,7 @@ module UART_receive_controller #
 parameter COUNTER_MAX = C_SYSTEM_FREQ / C_BAUDRATE;
 parameter COUNTER_WIDTH = $clog2(COUNTER_MAX);
 
-reg [3:0] tick_count;
+logic [3:0] tick_count;
 
 
 //RX_Controller_state_type RXC_state;
@@ -139,7 +139,7 @@ always_ff @ (posedge Clk or negedge Resetn) begin
 		end
 		S_RXC_ASSEMBLE_DATA: begin
 			// Assembling the 8 bit serial data onto data buffer
-			if (tick_count == 4'd15 && baud_tick==1'b1) begin
+			if (tick_count == 4'd15 && baud_tick==1'b1) begin	//TODO: is this right?
 				// Only sample the data at the middle of transmission
 				data_buffer <= {RX_data_in, data_buffer[7:1]};
 				tick_count <= 4'b0; 

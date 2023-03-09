@@ -19,6 +19,10 @@ logic [2:0] data_count;
 logic [9:0] clock_count;
 
 
+logic [3:0] tick_count;
+
+
+
 enum logic [1:0] {
 	S_TX_IDLE,
 	S_TX_START_BIT,
@@ -34,6 +38,10 @@ always_ff @ (posedge Clk, negedge Resetn) begin
 		TX_state<=S_TX_IDLE;
 		data_shift_out<=0;
 		UART_TX_I<=1'b1;	//start at 0 or 1?
+		tick_count<=4'd0;
+		data_count<=3'd0;
+
+		TX_data_out<=1'b1;
 		
 	end else begin
 
@@ -51,38 +59,42 @@ always_ff @ (posedge Clk, negedge Resetn) begin
 			end
 
 			S_TX_START_BIT: begin
-				if(clock_count==`RX_CLOCK_RATE-1) begin
+				if((tick_count == 4'd15 && baud_tick==1'b1)) begin
 					TX_data_out<=data_shift_out[0];
 					data_shift_out<=data_shift_out>>1;
-					data_count<=data_count+3'b1;
+					data_count<=3'b0;
 					clock_count<=10'b0;
-
 					TX_state<=S_TX_TRANSMIT_BITS;
 				end
-				clock_count<=clock_count+10'b1;
+				if(baud_tick==1'b1) begin
+					tick_count<=tick_count+4'd1;
+				end
 			end
 
 			S_TX_TRANSMIT_BITS: begin
-				if(clock_count==`RX_CLOCK_RATE-1) begin
+				if((tick_count == 4'd15 && baud_tick==1'b1)) begin
 					TX_data_out<=data_shift_out[0];
 					data_shift_out<=data_shift_out>>1;
 					clock_count<=10'b0;
 					data_count<=data_count+3'b1;
-					
 					if(data_count==3'd7) begin
 						TX_state<=S_TX_STOP_BIT;
 					end
 				end
-
-				clock_count<=clock_count+10'b1;
+				if(baud_tick==1'b1) begin
+					tick_count<=tick_count+4'd1;
+				end
 			end
 
 			S_TX_STOP_BIT: begin
 				TX_data_out<=1'b1;
 				clock_count<=clock_count+10'b1;
-				if(clock_count==`RX_CLOCK_RATE-1) begin				
+				if((tick_count == 4'd15 && baud_tick==1'b1)) begin				
 					TX_state<=S_TX_IDLE;	
 					clock_count<=10'b0;
+				end
+				if(baud_tick==1'b1) begin
+					tick_count<=tick_count+4'd1;
 				end
 			end
 

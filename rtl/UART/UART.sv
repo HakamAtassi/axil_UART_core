@@ -21,7 +21,8 @@ module UART
     output logic Empty,            
 
     // TX signals
-    input logic [7:0] TX_data,       
+    input logic [7:0] TX_data,     
+    input logic Enable_tx,
     input logic wr_uart_en,            
 
     output logic Full,            
@@ -44,7 +45,6 @@ logic Frame_error;
 
 //UART transmit controller
 logic [7:0] w_data;
-logic Enable_tx;
 
 
 
