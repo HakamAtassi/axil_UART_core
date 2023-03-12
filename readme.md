@@ -1,8 +1,11 @@
+
 # TODO
-* Integrate baud bridge
+* ~Integrate baud bridge~
+* ~Integrate fifos~
 * Wrap with AXI interface
 * AXI bursts?
 * Wrap in TileLink
+* Write more robust test benches
 
 
 
