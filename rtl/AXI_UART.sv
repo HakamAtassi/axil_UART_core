@@ -16,8 +16,6 @@
 //		 |							  |		|   |		|								   |	|				 |
 //		 |____________________________|		|___|		|__________________________________|	|________________|
 //
-//
-//
 
 
 
@@ -25,19 +23,19 @@ module AXI_UART
 #(
 
 	parameter C_FAMILY = "virtex6",
-	parameter C_S_AXI_ACLK_FREQ_HZ = 100000000,
+	parameter C_S_AXI_ACLK_FREQ_HZ = 100_000_000,
 	
 	parameter C_S_AXI_ADDR_WIDTH = 4,
 	parameter C_S_AXI_DATA_WIDTH = 32,
 	parameter C_S_AXI_PROTOCOL = "AXI4LITE",
 
-	parameter C_BAUDRATE = 9600,
+	parameter C_BAUDRATE = 115_200,
 	parameter C_DATA_BITS = 8,
 	parameter C_USE_PARITY = 0,
 	parameter C_ODD_PARITY = 0,
 
 	//Embedded memory parameters
-	parameter MEMORY_ADDR_WIDTH = 18,
+	parameter MEMORY_ADDR_WIDTH = 18,0
 	parameter MEMORY_DATA_WIDTH = 16
 
 )
@@ -51,8 +49,8 @@ module AXI_UART
 
 	// WRITE ADDRESS CHANNEL
 	input logic [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_AWADDR,	//P4	-	Write Address
-	input logic S_AXI_AWVALID,							//P5	-	Write Valid
-	output logic S_AXI_AWREADY,							//P6	-	Write Ready
+	input logic S_AXI_AWVALID,							//P5	-	Write Address Valid
+	output logic S_AXI_AWREADY,							//P6	-	Write Address Ready
 
 
 	// WRITE DATA CHANNEL
@@ -67,6 +65,7 @@ module AXI_UART
 	output logic S_AXI_BVALID,							//P12	-	Write Response Valid
 	input logic S_AXI_BREADY,							//P13	-	Write Response Ready
 
+
 	// READ ADDRESS CHANNEL
 	input logic [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_ARADDR,	//P14	-	Read Address
 	input logic S_AXI_ARVALID,							//P15	-	Read Address Valid
@@ -77,75 +76,147 @@ module AXI_UART
 	output logic [C_S_AXI_DATA_WIDTH-1:0] S_AXI_RDATA,	//P17	-	Read Data 
 	output logic [1:0] S_AXI_RRESP,						//P18	-	Read Response (Faults/errors)
 	output logic S_AXI_RVALID,							//P19	-	Read Valid
-	input logic S_AXI_RREADY,							//P20	-	Read Ready
+	input logic S_AXI_RREADY,							//P20	-	Read Ready (master ready to accept data) / TODO: use for back pressure
 
 
-	input logic RX,								//P21 	-	input to UART from HOST
+	input logic RX,										//P21 	-	input to UART from HOST
 	output logic TX,									//P22	-	Transmit 
 	
-	//==========================UART INPUT SIGNALS================================
-	
-	input logic UART_initialize,						//P23	-	TODO
-	output logic UART_enable							//P24	-	TODO 
 
 );
 
 
-
-logic [MEMORY_ADDR_WIDTH-1:0] SRAM_address;	//number of bits needed to address embedded mem.
-logic [MEMORY_DATA_WIDTH-1:0] SRAM_write_data;
-logic Initialize;
+//=============== UART INST. ==============//
 
 
+logic Enable_rx;
+logic rd_uart_en;
+logic RX_data;
+logic Empty;
+
+logic TX_data;
+logic Enable_tx;
+logic wr_uart_en;
+
+logic Full;
+
+
+UART
+#(
+    .C_BAUDRATE(C_BAUDRATE),
+    .C_SYSTEM_FREQ(50_000_000)
+)
+UART(
+    .Clk(S_AXI_ACLK),                  	// P0 
+    .Resetn(S_AXI_ARESETN),             // P1
+
+    // RX signals
+    .RX(RX),                    		// P2   -   RX pin
+    .rd_uart_en(rd_uart_en),            // P3   -   Signal a read from UART
+    .Enable_rx(Enable_rx),
+
+
+    .RX_data(RX_data),        			// P4   -   UART read data from RX
+    .Empty(Empty),                		// P5   -   UART read fifo empty
+
+
+    // TX signals
+   	.TX_data(TX_data),         			// P6   -   UART write data to TX
+	.Enable_tx(Enable_tx),
+    .wr_uart_en(wr_uart_en),            // P7   -   UART write enable
+
+    .Full(Full),                 		// P8   -   UART write fifo full
+    .TX(TX)                   			// P9   -   TX pin
+
+);
+
+
+//Register the outputs
+logic S_AXI_WREADY_reg;
+logic S_AXI_RREADY_reg;
+
+logic S_AXI_AWREADY_reg;
+logic S_AXI_ARREADY_reg;
+
+
+wire address_valid_and_in_range;
+
+
+wire write_valid;
+
+
+// Output assignments
+assign S_AXI_AWREADY = S_AXI_AWREADY_reg;
+assign S_AXI_ARREADY= S_AXI_ARREADY_reg;
+
+assign S_AXI_WREADY = S_AXI_WREADY_reg;	//if TX fifo is not full, write is ready
+assign S_AXI_RREADY = S_AXI_RREADY_reg;	//if RX fifo is not empty, read is ready
 
 
 
-enum logic [3:0] {
-	S_IDLE,
-	S_RECIEVE_WORDS	//TODO: Parameterize word size
-} S_AXI_UART;
+
+// is this periphiral being addressed?
+//TODO: how do I check if the input address is using the correct range without a comparator?
+assign address_valid_and_in_range  = S_AXI_AWVALID && (S_AXI_AWADDR && ());	//is this periphiral being addressed? (address valid and matches this periphiral)
 
 
+// write occurs when write address is valid and in range && fifo is not full && data is valid
+assign write_valid = address_valid_and_in_range && S_AXI_WREADY_reg && S_AXI_WREADY;
 
-always_ff @(posedge S_AXI_ACLK) begin
+
+Enable_rx<=1'b1;	//RX module always reading/polling line
+Enable_tx<=1'b1;	//TX always writing buffer contents to line 
+
+always_ff @ (posedge S_AXI_ACLK, negedge S_AXI_ARESETN) begin
+	
 	if(!S_AXI_ARESETN) begin
+		S_AXI_AWREADY_reg<=1'b0;
+		S_AXI_ARREADY_reg<=1'b0;
 		
-		//WRITE ADDRESS CHANNEL
-		S_AXI_AWADDR<={C_S_AXI_ADDR_WIDTH{0}}; 	//TODO: number of bits is a param??
-		S_AXI_AWVALID<=1'b0;
-
-		//WRITE DATA CHANNEL
-		S_AXI_WDATA<=SRAM_write_data;
-		S_AXI_WSTB<={C_S_AXI_DATA_WIDTH{1}};	//Mask with all 1s (normal write, no strobe)
-		S_AXI_WAVALID<=1'b0;
-
-		// WRITE RESPONSE CHANNEL
-		S_AXI_BREADY<=1'b0;	
-
-		// READ ADDRESS CHANNEL
-		S_AXI_ARADDR<={C_S_AXI_ADDR_WIDTH{0}};
-		S_AXI_ARVALID<=1'b0;
-
-		// READ DATA CHANNEL
-		S_AXI_RREADY<=1'b0;
-
-		
-
+		S_AXI_WREADY_reg<=1'b0;
+		S_AXI_RREADY_reg<=1'b0;
 	end else begin
-		case(S_AXI_UART)
-			
-			S_IDLE: begin
-				if(UART_enable==1'b1) begin		//Start UART transmission
-				end
-			end
+		S_AXI_AWREADY_reg<=1'b1;	//write address and read address are always ready
+		S_AXI_ARREADY_reg<=1'b1;	//they dont exist in uarts as data is just placed/read from fifo
 
-			S_RECIEVE_WORDS: begin	//RX port open. UART recieving data
+		S_AXI_WREADY_reg<=1'b0;
+		S_AXI_RREADY_reg<=1'b0;
 
-			end
+		if(!Full) S_AXI_WREADY_reg<=1'b1;
+		if(!Empty) S_AXI_RREADY_reg<=1'b1;
 
-		endcase
 	end
 end
+
+
+//for writes to UART, if write data is valid && S_AXI_WREADY_reg, perform stove and send data to fifo
+//write response stuff
+
+always_ff @(posedge S_AXI_ACLK) begin
+	Enable_tx<=1'b0;
+	wr_uart_en<=1'b0;
+
+	if(write_valid) begin	//backpressure if unable to write to fifo?
+		//perform strobe and write data to fifo
+		TX_data<=S_AXI_WDATA;
+		wr_uart_en<=1'b1;
+
+		// TODO: handel response...
+	end
+
+end
+
+
+// write ready is if tx fifo is not full
+// read ready is if rx fifo is not empty
+// backpressure?
+// address ready?
+
+
+// handel actual reads and writes
+
+
+
 
 
 endmodule

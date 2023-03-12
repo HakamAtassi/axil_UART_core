@@ -1,0 +1,46 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Sun Mar 12 04:57:36 2023
+[*]
+[dumpfile] "/home/hakam/Repos/axil_UART_core/tb/fifo_tb.vcd"
+[dumpfile_mtime] "Sun Mar 12 04:42:02 2023"
+[dumpfile_size] 2305719
+[savefile] "/home/hakam/Repos/axil_UART_core/tb/fifo_gtk.gtkw"
+[timestart] 0
+[size] 1920 1016
+[pos] -1 -1
+*-16.000000 12000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] fifo_tb.
+[sst_width] 233
+[signals_width] 207
+[sst_expanded] 1
+[sst_vpaned_height] 289
+@29
+fifo_tb.fifo.Clk
+@28
+fifo_tb.fifo.Resetn
+@c00024
+fifo_tb.fifo.data_in[7:0]
+@28
+(0)fifo_tb.fifo.data_in[7:0]
+(1)fifo_tb.fifo.data_in[7:0]
+(2)fifo_tb.fifo.data_in[7:0]
+(3)fifo_tb.fifo.data_in[7:0]
+(4)fifo_tb.fifo.data_in[7:0]
+(5)fifo_tb.fifo.data_in[7:0]
+(6)fifo_tb.fifo.data_in[7:0]
+(7)fifo_tb.fifo.data_in[7:0]
+@1401200
+-group_end
+@24
+fifo_tb.fifo.data_out[7:0]
+@28
+fifo_tb.fifo.rd_en
+fifo_tb.fifo.wr_en
+fifo_tb.fifo.full
+fifo_tb.fifo.empty
+@24
+fifo_tb.fifo.front[6:0]
+fifo_tb.fifo.back[6:0]
+[pattern_trace] 1
+[pattern_trace] 0

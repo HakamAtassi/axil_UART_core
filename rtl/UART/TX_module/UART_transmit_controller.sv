@@ -2,11 +2,13 @@ module UART_transmit_controller (
 	input logic Clk,
 	input logic Resetn,
 	
-	input logic Enable,      
+	input logic Enable,     // assert when fifo is not empty
     input logic [7:0] w_data, 
 
 	input logic baud_tick,	
 	
+	output logic Ready,	// Ready to transmit next word (read from fifo)
+
 	// UART pin	
     output logic UART_TX_I           
 );
@@ -52,8 +54,11 @@ always_ff @ (posedge Clk, negedge Resetn) begin
 			S_TX_IDLE: begin
 				TX_data_out<=1'b1;	// TX high when idle
 				data_shift_out<=w_data;
-				if(Enable) begin	//begin transmission
+				Ready<=1'b1;
+				if(Enable && Ready) begin	//begin transmission if enabled and output fifo is not empty
+					//Ready must be high for a clock before restarting transaction
 					TX_data_out<=1'b0;	//start bit
+					Ready<=1'b0;
 					TX_state<=S_TX_START_BIT;
 				end
 			end

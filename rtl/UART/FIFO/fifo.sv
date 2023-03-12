@@ -16,9 +16,11 @@ module fifo
 
     output logic [(DATA_WIDTH-1):0] data_out,
     output logic full,
-    output logic empty,
+    output logic empty
 
 );
+
+
 
 parameter DATA_ADDR_WIDTH = $clog2(DATA_DEPTH);
 
@@ -30,49 +32,67 @@ logic [(DATA_ADDR_WIDTH-1):0] back;
 
 
 
-always_ff @(posedge clk) begin
+logic [(DATA_ADDR_WIDTH-1):0] dblnext;
+logic [(DATA_ADDR_WIDTH-1):0] nxtread;
 
-    if(!resetn) begin
-        empty<=1'b0;
+
+assign dblnext = back+2;
+assign nxtread = front+1;
+
+always_ff @(posedge Clk, negedge Resetn) begin
+
+    if(!Resetn) begin
+        empty<=1'b1;
         full<=1'b0;
+        back<=0;
+        front<={(DATA_ADDR_WIDTH-1){1'b0}};
+
     end else begin
 
-        case({wr_en,rd_en,full,empty})
 
-            4'b100x: begin  //normal write
+        casez({wr_en,rd_en,!full,!empty})
+
+            4'b01?1: begin  //normal read
+                full<=1'b0;
+                front<=front+1;
+                data_out<=buff[front];
+                empty<=(nxtread==back);   // 1 is added becase after the read is done, the fifo is empty
+            end
+
+            4'b101?: begin  //normal write
+                full<=(dblnext==front);
+
+                empty<=1'b0;
                 buff[back]<=data_in;
                 back<=back+1;
-                full<=((back+2)==front);    // Calculate 1 clock early to overcome latency. 
-                                            // Note, the FIFO has a capacity of N-1
             end
 
-            4'b01x0: begin  //normal read
-                data_out<=buff[front];
-                front<=front-1;
-                empty<=((back+1==front));
-
-            end
-
-            4'b11x0: begin  
-                //if already empty, a read/write pair cant change status flags
+            4'b11?0: begin  // simultaneously write and read when empty
                 full<=1'b0;
                 empty<=1'b0;
-                data_out<=buff[front];
+
+                //front<=front+1;
+                back<=back+1;
+                
                 buff[back]<=data_in;
+                data_out<=buff[front];
             end
-            
-            4'b11x1: begin  
-                //if already full, a read/write pair cant change status flags
-                full<=1'b0;
-                empty<=1'b1;
-                data_out<=buff[front];
+
+            4'b11?1: begin  // simultaneously write and read when not empty
+                full<=full; // 1 read and 1 write keeps buffer unchanged
+                empty<=1'b0;    //wasnt empty before, wasnt empty now
+
+                front<=front+1;
+                back<=back+1;
+                
                 buff[back]<=data_in;
+                data_out<=buff[front];
+
+
             end
 
         endcase
-
     end
-
 end
 
 

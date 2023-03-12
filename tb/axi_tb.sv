@@ -11,7 +11,7 @@ initial $display("Running axi_tb.sv");
 
 /*	UART PARAMETERS	*/
 parameter C_FAMILY = "virtex6";
-parameter C_S_AXI_ACLK_FREQ_HZ = 100_000_000;
+parameter C_S_AXI_ACLK_FREQ_HZ = 50_000_000;
 
 parameter C_S_AXI_ADDR_WIDTH = 4;
 parameter C_S_AXI_DATA_WIDTH = 32;
@@ -72,37 +72,39 @@ logic [7:0] RX_data;
 logic [7:0] TX_data;
 
 logic rd_uart_en;
-
-parameter BAUD_IN_CLOCKS_500M = (500_000_000/C_BAUDRATE);
-
-initial begin
-	$display("BAUD IN CLOCKS %0d", BAUD_IN_CLOCKS_500M);
-end
+logic wr_uart_en;
 
 
-// Transmit an 8 bit word to the UART  
+parameter BAUD_IN_CLOCKS_50M = (50_000_000/C_BAUDRATE);
+
+
+// Transmit an 8 bit word to the UART  (test RX pin)
 task transmit_word_to_uart(logic [7:0] rx_data);
 	RX<=1'b0;
 	Enable_rx<=1'b1;
 
-	repeat(BAUD_IN_CLOCKS_500M) @(posedge S_AXI_ACLK);
+	repeat(BAUD_IN_CLOCKS_50M) @(posedge S_AXI_ACLK);
 	for(int i=0;i<8;i=i+1) begin
 		RX<=rx_data[0];
 		rx_data<=rx_data>>1;
-		repeat(BAUD_IN_CLOCKS_500M) @(posedge S_AXI_ACLK);
+		repeat(BAUD_IN_CLOCKS_50M) @(posedge S_AXI_ACLK);
 	end
 	RX<=1'b1;
-	repeat(BAUD_IN_CLOCKS_500M) @(posedge S_AXI_ACLK);
+	repeat(BAUD_IN_CLOCKS_50M) @(posedge S_AXI_ACLK);
 endtask
 
 
 //pass word to uart and output serially to TX pin
 task recieve_word_from_uart(logic [7:0] tx_data);
 	Enable_tx<=1'b1;
+	wr_uart_en<=1'b1;
 	TX_data<=tx_data;
 	@(posedge S_AXI_ACLK);
-	//Enable_tx<=1'b0;
+	wr_uart_en<=1'b0;
+	repeat(100) @(posedge S_AXI_ACLK);
 
+
+	//Enable_tx<=1'b0;
 
 endtask
 
@@ -115,15 +117,13 @@ task read_word_uart;
 	if(!Empty) begin
 		rd_uart_en<=1'b1;
 		$display("Read UART Data: %0d", RX_data);
-		repeat(4340) @(posedge S_AXI_ACLK);	//TODO: is this right? should it not wait 1 clk?
+		repeat(BAUD_IN_CLOCKS_50M) @(posedge S_AXI_ACLK);	//TODO: is this right? should it not wait 1 clk?
 
 		rd_uart_en<=1'b0;
 	end
 	//repeat(1) @(posedge S_AXI_ACLK);
 
 endtask
-
-
 
 
 
@@ -147,7 +147,6 @@ UART(
 
     // TX signals
    	.TX_data(TX_data),         			// P6   -   UART write data to TX
-	.Enable_tx(Enable_tx),
     .wr_uart_en(wr_uart_en),            // P7   -   UART write enable
 
     .Full(Full),                 		// P8   -   UART write fifo full
@@ -175,7 +174,7 @@ initial begin
 end
 
 always begin
-	S_AXI_ACLK<=0; #1; S_AXI_ACLK<=1; #1;
+	S_AXI_ACLK<=0; #10; S_AXI_ACLK<=1; #10;
 end
 
 always begin
@@ -194,9 +193,9 @@ end
 initial begin
 	@(posedge S_AXI_ACLK);
 	@(posedge S_AXI_ACLK);
-	for(int i=0;i<512;i=i+1) begin
-		//transmit_word_to_uart(testMem[i]);
-		transmit_word_to_uart({8'b10000001});
+	for(int i=0;i<128;i=i+1) begin
+		transmit_word_to_uart(testMem[i]);
+		//transmit_word_to_uart({8'b10000001});
 
 	end
 end
@@ -211,18 +210,18 @@ end
 
 // test TX module
 
-
-always begin
+initial begin
 	@(posedge S_AXI_ACLK);
 	@(posedge S_AXI_ACLK);
-	recieve_word_from_uart({8'b01010101});
-
+	for(int i=0;i<150;i=i+1) begin
+		recieve_word_from_uart(i);	
+	end
 end
 
 
 
 initial begin
-	repeat(100000000) @(posedge S_AXI_ACLK);
+	repeat(10000000) @(posedge S_AXI_ACLK);
 	$display("Testbench duration exhausted (10,000,000 clocks) ");
 	$finish;
 end
