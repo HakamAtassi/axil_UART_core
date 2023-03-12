@@ -1,5 +1,6 @@
+
 # TODO
-* Integrate baud bridge
+* ~Integrate baud bridge~
 * Wrap with AXI interface
 * AXI bursts?
 * Wrap in TileLink
