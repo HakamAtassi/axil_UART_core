@@ -2,6 +2,7 @@
 # TODO
 * ~Integrate baud bridge~
 * ~Integrate fifos~
+* Invalid data is being transmitted from the tx. Deal with that...
 * Wrap with AXI interface
 * AXI bursts?
 * Wrap in TileLink

@@ -104,7 +104,6 @@ task recieve_word_from_uart(logic [7:0] tx_data);
 	repeat(100) @(posedge S_AXI_ACLK);
 
 
-	//Enable_tx<=1'b0;
 
 endtask
 
@@ -133,24 +132,25 @@ UART
     .C_SYSTEM_FREQ(50_000_000)
 )
 UART(
-    .Clk(Clk_50M),                   	// P0 
-    .Resetn(S_AXI_ARESETN),             // P1
+    .Clk(Clk_50M),
+    .Resetn(S_AXI_ARESETN),
 
      // RX signals
-    .RX(RX),                    		// P2   -   RX pin
-    .rd_uart_en(rd_uart_en),            // P3   -   Signal a read from UART
+    .RX(RX),
+    .rd_uart_en(rd_uart_en),
     .Enable_rx(Enable_rx),
 
 
-    .RX_data(RX_data),        			// P4   -   UART read data from RX
-    .Empty(Empty),                		// P5   -   UART read fifo empty
+    .RX_data(RX_data),
+    .Empty(Empty),                	
 
     // TX signals
-   	.TX_data(TX_data),         			// P6   -   UART write data to TX
-    .wr_uart_en(wr_uart_en),            // P7   -   UART write enable
+   	.TX_data(TX_data),
+    .wr_uart_en(wr_uart_en),          
+    .Enable_tx(Enable_tx),      	
 
-    .Full(Full),                 		// P8   -   UART write fifo full
-    .TX(TX)                   			// P9   -   TX pin
+    .Full(Full),
+    .TX(TX)
 
 );
 
@@ -209,11 +209,10 @@ end
 
 
 // test TX module
-
 initial begin
 	@(posedge S_AXI_ACLK);
 	@(posedge S_AXI_ACLK);
-	for(int i=0;i<150;i=i+1) begin
+	for(int i=0;i<128;i=i+1) begin
 		recieve_word_from_uart(i);	
 	end
 end

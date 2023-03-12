@@ -9,24 +9,25 @@ module UART
     parameter C_SYSTEM_FREQ = 50_000_000
 )
 (
-    input logic Clk,                 
-    input logic Resetn,            
+    input logic Clk,            // P0   -   Clock        
+    input logic Resetn,         // P1   -   Reset
 
     // RX signals
-    input logic RX,                   
-    input logic rd_uart_en,        
-    input logic Enable_rx,
+    input logic RX,             // P2   -   RX Pin in
+    input logic rd_uart_en,     // P3   -   Unload word enable
+    input logic Enable_rx,      // P4   -   Enable RX module
 
 
-    output logic [7:0] RX_data,       
-    output logic Empty,            
+    output logic [7:0] RX_data, // P5   -   Recieved RX word 
+    output logic Empty,         // P6   -   RX buffer empty  
 
     // TX signals
-    input logic [7:0] TX_data,     
-    input logic wr_uart_en,  // enable a write to the tx fifo
+    input logic [7:0] TX_data,  // P7   -   Word to transmit
+    input logic wr_uart_en,     // P8   -   Enable a write to the tx fifo
+    input logic Enable_tx,      // P9   -   Enable TX module
 
-    output logic Full,            
-    output logic TX                 
+    output logic Full,          // P10  -   TX fifo full
+    output logic TX             // P11  -   TX pin out
 
 );
 
@@ -69,7 +70,6 @@ wire write_en_rx_fifo;
 
 
 // RX module wire assignments
-//assign RX_data = data_out_rx_fifo;
 assign write_en_rx_fifo = !Empty && !full_rx_fifo;  // fix rx module Empty signal name
 
 
@@ -161,7 +161,9 @@ UART_transmit_controller UART_transmit_controller (
 	.Clk(Clk),
 	.Resetn(Resetn),
 	
-	.Enable(!empty_tx_fifo),
+    .Enable(Enable_tx),
+
+	.w_en(!empty_tx_fifo),
     .w_data(data_out_tx_fifo),  
 
 	.baud_tick(baud_tick),	//output of baudrate timer

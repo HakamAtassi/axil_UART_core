@@ -1,21 +1,21 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Sun Mar 12 05:15:10 2023
+[*] Sun Mar 12 22:40:47 2023
 [*]
 [dumpfile] "/home/hakam/Repos/axil_UART_core/tb/axi_tb.vcd"
-[dumpfile_mtime] "Sun Mar 12 05:14:57 2023"
-[dumpfile_size] 34196797
+[dumpfile_mtime] "Sun Mar 12 22:39:56 2023"
+[dumpfile_size] 6673737
 [savefile] "/home/hakam/Repos/axil_UART_core/tb/UART_core_gtk.gtkw"
 [timestart] 0
-[size] 1920 1016
+[size] 1920 1043
 [pos] -1 -1
-*-18.872761 139000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-23.872761 139000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] axi_tb.
 [treeopen] axi_tb.UART.
 [sst_width] 327
 [signals_width] 331
 [sst_expanded] 1
-[sst_vpaned_height] 287
+[sst_vpaned_height] 297
 @28
 axi_tb.S_AXI_ACLK
 @200
@@ -41,6 +41,10 @@ axi_tb.UART.UART_receive_controller.Empty
 @28
 axi_tb.UART.UART_transmit_controller.Clk
 axi_tb.UART.UART_transmit_controller.Enable
+axi_tb.UART.UART_transmit_controller.Ready
+@29
+axi_tb.UART.UART_transmit_controller.w_en
+@28
 axi_tb.UART.UART_transmit_controller.Resetn
 axi_tb.UART.UART_transmit_controller.TX_data_out
 axi_tb.UART.UART_transmit_controller.TX_state[1:0]
@@ -48,9 +52,8 @@ axi_tb.UART.UART_transmit_controller.baud_tick
 axi_tb.UART.UART_transmit_controller.data_shift_out[7:0]
 @200
 -tx_fifo
-@29
-axi_tb.UART.tx_fifo.Clk
 @28
+axi_tb.UART.tx_fifo.Clk
 axi_tb.UART.tx_fifo.Resetn
 @24
 axi_tb.UART.tx_fifo.front[6:0]

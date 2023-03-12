@@ -1,7 +1,3 @@
-// AXI UART
-// May not be entirely AXI compliant. Use with caution.
-//
-//
 // ================================================================================================================
 //																			
 //	  	  _____________________________		 ___      	 __________________________________      ________________
@@ -16,6 +12,8 @@
 //		 |							  |		|   |		|								   |	|				 |
 //		 |____________________________|		|___|		|__________________________________|	|________________|
 //
+//
+// ================================================================================================================
 
 
 
@@ -35,7 +33,7 @@ module AXI_UART
 	parameter C_ODD_PARITY = 0,
 
 	//Embedded memory parameters
-	parameter MEMORY_ADDR_WIDTH = 18,0
+	parameter MEMORY_ADDR_WIDTH = 18,
 	parameter MEMORY_DATA_WIDTH = 16
 
 )
@@ -122,8 +120,9 @@ UART(
 
     // TX signals
    	.TX_data(TX_data),         			// P6   -   UART write data to TX
-	.Enable_tx(Enable_tx),
     .wr_uart_en(wr_uart_en),            // P7   -   UART write enable
+	.Enable_tx(Enable_tx),
+
 
     .Full(Full),                 		// P8   -   UART write fifo full
     .TX(TX)                   			// P9   -   TX pin

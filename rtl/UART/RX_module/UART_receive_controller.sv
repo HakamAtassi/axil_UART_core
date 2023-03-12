@@ -109,7 +109,7 @@ always_ff @ (posedge Clk or negedge Resetn) begin
 		case (RXC_state)
 		S_RXC_IDLE : begin
 			if (Enable) begin
-				// Uart receiver is enabled
+				// UART receiver is enabled
 				if (RX_data_in == 1'b0) begin
 					// Start bit detected
 					RXC_state <= S_RXC_SYNC;

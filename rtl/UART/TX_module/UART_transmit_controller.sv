@@ -1,8 +1,10 @@
 module UART_transmit_controller (
 	input logic Clk,
 	input logic Resetn,
+
+	input logic Enable,
 	
-	input logic Enable,     // assert when fifo is not empty
+	input logic w_en,     // assert when fifo is not empty
     input logic [7:0] w_data, 
 
 	input logic baud_tick,	
@@ -14,7 +16,7 @@ module UART_transmit_controller (
 );
 
 
-logic [7:0] data_shift_out;	//TODO: make parameter
+logic [7:0] data_shift_out;	
 logic TX_data_out;	//register the TX out
 logic [2:0] data_count;
 
@@ -22,7 +24,6 @@ logic [9:0] clock_count;
 
 
 logic [3:0] tick_count;
-
 
 
 enum logic [1:0] {
@@ -55,7 +56,7 @@ always_ff @ (posedge Clk, negedge Resetn) begin
 				TX_data_out<=1'b1;	// TX high when idle
 				data_shift_out<=w_data;
 				Ready<=1'b1;
-				if(Enable && Ready) begin	//begin transmission if enabled and output fifo is not empty
+				if(Enable && Ready &&  w_en) begin	//begin transmission if enabled and output fifo is not empty
 					//Ready must be high for a clock before restarting transaction
 					TX_data_out<=1'b0;	//start bit
 					Ready<=1'b0;
