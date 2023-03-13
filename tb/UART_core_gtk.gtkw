@@ -1,10 +1,10 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Sun Mar 12 22:40:47 2023
+[*] Mon Mar 13 00:50:39 2023
 [*]
 [dumpfile] "/home/hakam/Repos/axil_UART_core/tb/axi_tb.vcd"
-[dumpfile_mtime] "Sun Mar 12 22:39:56 2023"
-[dumpfile_size] 6673737
+[dumpfile_mtime] "Mon Mar 13 00:49:17 2023"
+[dumpfile_size] 3310337
 [savefile] "/home/hakam/Repos/axil_UART_core/tb/UART_core_gtk.gtkw"
 [timestart] 0
 [size] 1920 1043

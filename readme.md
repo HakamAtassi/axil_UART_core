@@ -4,6 +4,7 @@
 * ~Integrate fifos~
 * Invalid data is being transmitted from the tx. Deal with that...
 * Wrap with AXI interface
+* Add stat reg and control reg. UART right now only supports writes to TX and reads from RX 
 * AXI bursts?
 * Wrap in TileLink
 * Write more robust test benches
@@ -11,7 +12,9 @@
 
 
 
+# For report
 
+* document all the latencies of transactions for AXI / TileLink
 
 
 

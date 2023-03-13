@@ -17,6 +17,16 @@
 
 
 
+//TODO: update this on how it actually works because I changed things a bit
+// Brief note on memory mapping:
+// Since for the time being, the system will likely only consist of a few slave UART cores and a few arbitrary 
+// Master cores (no main memory), the memory map will not be very sophisticated. 
+
+// Currently, each instantiated UART core will accept a single value for its address
+// ie: UART 0's address is 0, UART 1's address is 1. These values will be placed on the first available IO address space bits (MEMORY_ADDR_WIDTH+)
+//
+// System address width is assumed to be 32 bits wide. 
+
 module AXI_UART
 #(
 
@@ -34,7 +44,10 @@ module AXI_UART
 
 	//Embedded memory parameters
 	parameter MEMORY_ADDR_WIDTH = 18,
-	parameter MEMORY_DATA_WIDTH = 16
+	parameter MEMORY_DATA_WIDTH = 16,
+
+	// NON-XILINX parameters (Not within spec...)
+	parameter C_S_BASE_ADDRESS = 0
 
 )
 (
@@ -78,10 +91,24 @@ module AXI_UART
 
 
 	input logic RX,										//P21 	-	input to UART from HOST
-	output logic TX,									//P22	-	Transmit 
-	
-
+	output logic TX										//P22	-	Transmit 
 );
+
+
+// Parameter defs.
+
+parameter ADDRESS_WIDTH = C_S_AXI_ADDR_WIDTH*8;
+parameter MMIO_ADDRESS_WIDTH = ADDRESS_WIDTH-MEMORY_ADDR_WIDTH;
+
+// Wire renaming
+
+wire [0:MMIO_ADDRESS_WIDTH-1] MMIO_address_write;
+wire [0:MMIO_ADDRESS_WIDTH-1] MMIO_address_read;
+
+
+
+assign MMIO_address_write = S_AXI_AWADDR[(ADDRESS_WIDTH-1):(MEMORY_ADDR_WIDTH-1)];	//Extract I/O base addresses
+assign MMIO_address_read = S_AXI_ARADDR[(ADDRESS_WIDTH-1):(MEMORY_ADDR_WIDTH-1)];
 
 
 //=============== UART INST. ==============//
@@ -89,10 +116,10 @@ module AXI_UART
 
 logic Enable_rx;
 logic rd_uart_en;
-logic RX_data;
+logic [7:0] RX_data;
 logic Empty;
 
-logic TX_data;
+logic [7:0] TX_data;
 logic Enable_tx;
 logic wr_uart_en;
 
@@ -102,7 +129,7 @@ logic Full;
 UART
 #(
     .C_BAUDRATE(C_BAUDRATE),
-    .C_SYSTEM_FREQ(50_000_000)
+    .C_SYSTEM_FREQ(C_S_AXI_ACLK_FREQ_HZ)
 )
 UART(
     .Clk(S_AXI_ACLK),                  	// P0 
@@ -110,24 +137,26 @@ UART(
 
     // RX signals
     .RX(RX),                    		// P2   -   RX pin
-    .rd_uart_en(rd_uart_en),            // P3   -   Signal a read from UART
-    .Enable_rx(Enable_rx),
+    .rd_uart_en(rd_uart_en),            // P3   -   Signal a read from UART (Unload)
+    .Enable_rx(Enable_rx),				// P4	-	Enable rx module
 
 
-    .RX_data(RX_data),        			// P4   -   UART read data from RX
-    .Empty(Empty),                		// P5   -   UART read fifo empty
-
+    .RX_data(RX_data),        			// P5   -   UART read data from RX
+    .Empty(Empty),                		// P6   -   UART read fifo empty
 
     // TX signals
-   	.TX_data(TX_data),         			// P6   -   UART write data to TX
-    .wr_uart_en(wr_uart_en),            // P7   -   UART write enable
-	.Enable_tx(Enable_tx),
+   	.TX_data(TX_data),         			// P7   -   UART write data to TX
+    .wr_uart_en(wr_uart_en),            // P8   -   UART write enable
+	.Enable_tx(Enable_tx),				// P9	-	Enable tx module
 
-
-    .Full(Full),                 		// P8   -   UART write fifo full
-    .TX(TX)                   			// P9   -   TX pin
+    .Full(Full),                 		// P10   -  UART write fifo full
+    .TX(TX)                   			// P11   -  TX pin
 
 );
+
+assign Enable_rx=1'b1;	//RX and TX modules always on
+assign Enable_tx=1'b1;
+
 
 
 //Register the outputs
@@ -135,22 +164,89 @@ logic S_AXI_WREADY_reg;
 logic S_AXI_RREADY_reg;
 
 logic S_AXI_AWREADY_reg;
-logic S_AXI_ARREADY_reg;
-
 
 wire address_valid_and_in_range;
-
 
 wire write_valid;
 
 
 // Output assignments
 assign S_AXI_AWREADY = S_AXI_AWREADY_reg;
-assign S_AXI_ARREADY= S_AXI_ARREADY_reg;
 
 assign S_AXI_WREADY = S_AXI_WREADY_reg;	//if TX fifo is not full, write is ready
-assign S_AXI_RREADY = S_AXI_RREADY_reg;	//if RX fifo is not empty, read is ready
+//assign S_AXI_RREADY = S_AXI_RREADY_reg;	//if RX fifo is not empty, read is ready
 
+
+
+//========================================================================================
+//======================================AXI READ LOGIC====================================
+//========================================================================================
+
+// 1) Check if read address is valid and in range
+// 2) Check if UART is ready to be read from 
+//     2.1) Yes => if master is ready to accept, output a word by reading from fifo and enable READ_VALID
+//     			   if master is not ready to accept (busy) wait till master is available.
+//    2.2)  No =>  Output corresponding error to read response channel.
+
+
+
+
+// TODO: make registers for the outputs (required)
+
+// what are the ouputs of the UART when reading??
+
+logic S_AXI_ARREADY_reg;	// Read address ready output must be registered
+
+logic [0:2] read_valid_buffer;	// Buffer to delay the read response by 2 clocks (right-most bit not included)
+
+wire read_valid_in_range;
+
+
+assign read_valid_in_range = (S_AXI_ARVALID && (MMIO_address_read==C_S_BASE_ADDRESS));	//check if address for read is valid and in range
+
+assign S_AXI_ARREADY = S_AXI_ARREADY_reg;	
+
+assign rd_uart_en = !Empty && read_valid_in_range;	// Initiate the read
+
+assign S_AXI_RVALID = read_valid_buffer[2];
+
+
+
+
+always_ff @(posedge S_AXI_ACLK, negedge S_AXI_ARESETN) begin
+	if(!S_AXI_ARESETN) begin
+		S_AXI_ARREADY_reg<=1'b0;
+	end else begin
+		S_AXI_ARREADY_reg<=!Empty;	// Address is ready to be read from if the UART RX FIFO is not empty.
+	end
+end
+
+
+// TODO: this does not account for back pressure... (valid should not be shifted out if it wasnt accepted by master...)
+//when a read has been requested from the UART, delay the valid bit a few clocks while the read request is returned
+always_ff @ (posedge S_AXI_ACLK, negedge S_AXI_ARESETN) begin
+	if(!S_AXI_ARESETN) begin
+		read_valid_buffer<=3'b000;
+	end else begin
+		read_valid_buffer<={rd_uart_en,read_valid_buffer[0:1]};
+	end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 
 
 
@@ -204,7 +300,7 @@ always_ff @(posedge S_AXI_ACLK) begin
 	end
 
 end
-
+*/
 
 // write ready is if tx fifo is not full
 // read ready is if rx fifo is not empty

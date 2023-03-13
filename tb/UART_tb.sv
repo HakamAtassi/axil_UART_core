@@ -2,12 +2,11 @@
 
 `include "../rtl/UART/UART.sv"
 `include "../rtl/UART/UART_bridge.sv"
-`include "../rtl/AXI_UART.sv"
 
 module axi_tb;
 
 
-initial $display("Running axi_tb.sv");
+initial $display("Running UART_tb.sv");
 
 
 /*	UART PARAMETERS	*/
@@ -52,7 +51,7 @@ wire S_AXI_ARREADY;								//P16	-	Read Address Ready
 
 
 
-wire [C_S_AXI_ADDR_WIDTH*8-1:0] S_AXI_RDATA;		//P17	-	Read Data 
+wire [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_RDATA;		//P17	-	Read Data 
 wire [1:0] S_AXI_RRESP;							//P18	-	Read Response (Faults/errors)
 wire S_AXI_RVALID;								//P19	-	Read Valid
 logic S_AXI_RREADY;								//P20	-	Read Ready
@@ -68,6 +67,7 @@ logic Enable_tx;
 logic Clk_50M;
 
 
+
 logic [7:0] RX_data;
 logic [7:0] TX_data;
 
@@ -77,79 +77,6 @@ logic wr_uart_en;
 
 parameter BAUD_IN_CLOCKS_50M = (50_000_000/C_BAUDRATE);
 
-// ==================== DUT INST. ====================//
-
-
-
-
-AXI_UART
-#(
-	.C_FAMILY("virtex6"),
-	.C_S_AXI_ACLK_FREQ_HZ(50_000_000),
-	
-	.C_S_AXI_ADDR_WIDTH(4),
-	.C_S_AXI_DATA_WIDTH(32),
-	.C_S_AXI_PROTOCOL("AXI4LITE"),
-
-	.C_BAUDRATE(115_200),
-	.C_DATA_BITS(8),
-	.C_USE_PARITY(0),
-	.C_ODD_PARITY(0),
-
-	//Embedded memory parameters
-	.MEMORY_ADDR_WIDTH(18),
-	.MEMORY_DATA_WIDTH(16),
-
-	// NON-XILINX parameters (Not within spec...)
-	.C_S_BASE_ADDRESS(1)
-)
-AXI_UART
-(
-
-	// GLOBAL SIGNALS
-	.S_AXI_ACLK(S_AXI_ACLK),								//P1	-	Clock
-	.S_AXI_ARESETN(S_AXI_ARESETN),							//P2	-	Reset (active low)
-	.Interrupt(Interrupt),								    //P3	-	Interrupt
-
-
-	// WRITE ADDRESS CHANNEL
-	.S_AXI_AWADDR(S_AXI_AWADDR),	                        //P4	-	Write Address
-	.S_AXI_AWVALID(S_AXI_AWVALID),							//P5	-	Write Address Valid
-	.S_AXI_AWREADY(S_AXI_AWREADY),							//P6	-	Write Address Ready
-
-
-	// WRITE DATA CHANNEL
-	.S_AXI_WDATA(S_AXI_WDATA),	                            //P7	-	Write Data
-	.S_AXI_WSTB(S_AXI_WSTB),	                            //P8	-	Write Data Strobes
-	.S_AXI_WAVALID(S_AXI_WAVALID),							//P9	-	Write Data Valid
-	.S_AXI_WREADY(S_AXI_WREADY),							//P10	-	Write Data Ready
-
-	
-	// WRITE RESPONSE CHANNEL
-	.S_AXI_BRESP(S_AXI_BRESP),						        //P11	-	Write Response (Faults/errors)
-	.S_AXI_BVALID(S_AXI_BVALID),							//P12	-	Write Response Valid
-	.S_AXI_BREADY(S_AXI_BREADY),							//P13	-	Write Response Ready
-
-
-	// READ ADDRESS CHANNEL
-	.S_AXI_ARADDR(S_AXI_ARADDR),	                        //P14	-	Read Address
-	.S_AXI_ARVALID(S_AXI_ARVALID),							//P15	-	Read Address Valid
-	.S_AXI_ARREADY(S_AXI_ARREADY),							//P16	-	Read Address Ready
-
-
-	// READ DATA CHANNEL
-	.S_AXI_RDATA(S_AXI_RDATA),	                            //P17	-	Read Data 
-	.S_AXI_RRESP(S_AXI_RRESP),						        //P18	-	Read Response (Faults/errors)
-	.S_AXI_RVALID(S_AXI_RVALID),							//P19	-	Read Valid
-	.S_AXI_RREADY(S_AXI_RREADY),							//P20	-	Read Ready (master ready to accept data) / TODO: use for back pressure
-
-
-	.RX(RX),										//P21 	-	input to UART from HOST
-	.TX(TX)										//P22	-	Transmit 
-);
-
-
-// ==================== TASKS ========================//
 
 // Transmit an 8 bit word to the UART  (test RX pin)
 task transmit_word_to_uart(logic [7:0] rx_data);
@@ -166,6 +93,7 @@ task transmit_word_to_uart(logic [7:0] rx_data);
 	repeat(BAUD_IN_CLOCKS_50M) @(posedge S_AXI_ACLK);
 endtask
 
+
 //pass word to uart and output serially to TX pin
 task recieve_word_from_uart(logic [7:0] tx_data);
 	Enable_tx<=1'b1;
@@ -174,10 +102,16 @@ task recieve_word_from_uart(logic [7:0] tx_data);
 	@(posedge S_AXI_ACLK);
 	wr_uart_en<=1'b0;
 	repeat(100) @(posedge S_AXI_ACLK);
+
+
+
 endtask
 
+
+
+
+
 //Empty UART rx buffer (print to console)
-/*
 task read_word_uart;
 	if(!Empty) begin
 		rd_uart_en<=1'b1;
@@ -187,34 +121,64 @@ task read_word_uart;
 		rd_uart_en<=1'b0;
 	end
 	//repeat(1) @(posedge S_AXI_ACLK);
-endtask
-*/
-
-task read_word_from_AXU_UART();
-
-
 
 endtask
 
 
-//================TEST MEM INIT. ===================//
+
+UART
+#(
+    .C_BAUDRATE(C_BAUDRATE),
+    .C_SYSTEM_FREQ(50_000_000)
+)
+UART(
+    .Clk(Clk_50M),
+    .Resetn(S_AXI_ARESETN),
+
+     // RX signals
+    .RX(RX),
+    .rd_uart_en(rd_uart_en),
+    .Enable_rx(Enable_rx),
+
+
+    .RX_data(RX_data),
+    .Empty(Empty),                	
+
+    // TX signals
+   	.TX_data(TX_data),
+    .wr_uart_en(wr_uart_en),          
+    .Enable_tx(Enable_tx),      	
+
+    .Full(Full),
+    .TX(TX)
+
+);
+
+
 
 logic [7:0] testMem [512];
+
 initial begin
 	for(int i=0;i<512;i=i+1) begin
 		testMem[i]=i;
 	end
 end
 
-//==============================SIGNAL DRIVING==============================//
+
+
+//======================================================================//
 
 initial begin
-	$dumpfile("axi_tb");
+	$dumpfile("UART_tb");
 	$dumpvars();
 end
 
 always begin
 	S_AXI_ACLK<=0; #10; S_AXI_ACLK<=1; #10;
+end
+
+always begin
+	Clk_50M<=0;	#10; Clk_50M<=1; #10;
 end
 
 initial begin
@@ -229,22 +193,33 @@ end
 initial begin
 	@(posedge S_AXI_ACLK);
 	@(posedge S_AXI_ACLK);
-//	for(int i=0;i<128;i=i+1) begin
-    transmit_word_to_uart(42);
-//	end
+	for(int i=0;i<128;i=i+1) begin
+		transmit_word_to_uart(testMem[i]);
+	end
 end
-/*
-always begin // Continually read when not empty
+
+always begin 
 	@(posedge S_AXI_ACLK);
 	@(posedge S_AXI_ACLK);
 	read_word_uart;
 	@(posedge S_AXI_ACLK);
 end
-*/
+
+
+// test TX module
+initial begin
+	@(posedge S_AXI_ACLK);
+	@(posedge S_AXI_ACLK);
+	for(int i=0;i<128;i=i+1) begin
+		recieve_word_from_uart(i);	
+	end
+end
+
+
 
 initial begin
-	repeat(100000) @(posedge S_AXI_ACLK);
-	$display("Testbench duration exhausted (100,000 clocks) ");
+	repeat(10000000) @(posedge S_AXI_ACLK);
+	$display("Testbench duration exhausted (10,000,000 clocks) ");
 	$finish;
 end
 
