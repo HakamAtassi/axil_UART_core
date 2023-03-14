@@ -59,7 +59,7 @@ module AXI_UART
 
 
 	// WRITE ADDRESS CHANNEL
-	input logic [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_AWADDR,	//P4	-	Write Address
+	input logic [C_S_AXI_ADDR_WIDTH*8-1:0] S_AXI_AWADDR,//P4	-	Write Address
 	input logic S_AXI_AWVALID,							//P5	-	Write Address Valid
 	output logic S_AXI_AWREADY,							//P6	-	Write Address Ready
 
@@ -78,7 +78,7 @@ module AXI_UART
 
 
 	// READ ADDRESS CHANNEL
-	input logic [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_ARADDR,	//P14	-	Read Address
+	input logic [C_S_AXI_ADDR_WIDTH*8-1:0] S_AXI_ARADDR,//P14	-	Read Address
 	input logic S_AXI_ARVALID,							//P15	-	Read Address Valid
 	output logic S_AXI_ARREADY,							//P16	-	Read Address Ready
 
@@ -107,8 +107,8 @@ wire [0:MMIO_ADDRESS_WIDTH-1] MMIO_address_read;
 
 
 
-assign MMIO_address_write = S_AXI_AWADDR[(ADDRESS_WIDTH-1):(MEMORY_ADDR_WIDTH-1)];	//Extract I/O base addresses
-assign MMIO_address_read = S_AXI_ARADDR[(ADDRESS_WIDTH-1):(MEMORY_ADDR_WIDTH-1)];
+assign MMIO_address_write = S_AXI_AWADDR[(ADDRESS_WIDTH-1):(MEMORY_ADDR_WIDTH)];	//Extract I/O base addresses
+assign MMIO_address_read = S_AXI_ARADDR[(ADDRESS_WIDTH-1):(MEMORY_ADDR_WIDTH)];
 
 
 //=============== UART INST. ==============//
@@ -197,7 +197,7 @@ assign S_AXI_WREADY = S_AXI_WREADY_reg;	//if TX fifo is not full, write is ready
 
 logic S_AXI_ARREADY_reg;	// Read address ready output must be registered
 
-logic [0:2] read_valid_buffer;	// Buffer to delay the read response by 2 clocks (right-most bit not included)
+logic [0:3] read_valid_buffer;	// Buffer to delay the read response by 2 clocks (right-most bit not included)
 
 wire read_valid_in_range;
 
@@ -208,9 +208,9 @@ assign S_AXI_ARREADY = S_AXI_ARREADY_reg;
 
 assign rd_uart_en = !Empty && read_valid_in_range;	// Initiate the read
 
-assign S_AXI_RVALID = read_valid_buffer[2];
+assign S_AXI_RVALID = read_valid_buffer[0];
 
-
+assign S_AXI_RDATA = RX_data;
 
 
 always_ff @(posedge S_AXI_ACLK, negedge S_AXI_ARESETN) begin
@@ -226,9 +226,9 @@ end
 //when a read has been requested from the UART, delay the valid bit a few clocks while the read request is returned
 always_ff @ (posedge S_AXI_ACLK, negedge S_AXI_ARESETN) begin
 	if(!S_AXI_ARESETN) begin
-		read_valid_buffer<=3'b000;
+		read_valid_buffer<=0;
 	end else begin
-		read_valid_buffer<={rd_uart_en,read_valid_buffer[0:1]};
+		read_valid_buffer<={rd_uart_en,read_valid_buffer[0:2]};
 	end
 end
 

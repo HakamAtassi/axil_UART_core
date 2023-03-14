@@ -68,9 +68,12 @@ wire empty_rx_fifo;
 
 wire write_en_rx_fifo;
 
+wire empty_rx_module;
+
 
 // RX module wire assignments
 assign write_en_rx_fifo = !Empty && !full_rx_fifo;  // fix rx module Empty signal name
+
 
 
 fifo
@@ -85,12 +88,12 @@ rx_fifo
     .Resetn(Resetn),
 
     .data_in(data_in_rx_fifo),
-    .wr_en(!Empty),  //write to fifo when uart reciever is done TODO: how??
+    .wr_en(!empty_rx_module),  //write to fifo when uart reciever is done TODO: how??
     .rd_en(rd_uart_en), //top level module read enable controlls the fifo
 
     .data_out(RX_data),
     .full(full_rx_fifo),
-    .empty(empty_rx_fifo)
+    .empty(Empty)
 );
 
 UART_receive_controller UART_receive_controller (
@@ -103,7 +106,7 @@ UART_receive_controller UART_receive_controller (
 	.baud_tick(baud_tick),
 	
 	.RX_data(data_in_rx_fifo),
-	.Empty(Empty),  //TODO: rename this signal
+	.Empty(empty_rx_module),  //TODO: rename this signal
 
 	.Overrun(Overrun),
 	.Frame_error(Frame_error),

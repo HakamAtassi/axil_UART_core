@@ -30,7 +30,7 @@ logic S_AXI_ARESETN;							//P2	-	Reset (active low)
 wire Interrupt;									//P3	-	Interrupt
 
 
-logic [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_AWADDR;	//P4	-	Write Address
+logic [C_S_AXI_ADDR_WIDTH*8-1:0] S_AXI_AWADDR;	//P4	-	Write Address
 logic S_AXI_AWVALID;							//P5	-	Write Valid
 wire S_AXI_AWREADY;								//P6	-	Write Ready
 
@@ -46,13 +46,13 @@ wire S_AXI_BVALID;								//P12	-	Write Response Valid
 logic S_AXI_BREADY;								//P13	-	Write Response Ready
 
 
-logic [C_S_AXI_ADDR_WIDTH-1:0] S_AXI_ARADDR;	//P14	-	Read Address
+logic [C_S_AXI_ADDR_WIDTH*8-1:0] S_AXI_ARADDR;	//P14	-	Read Address
 logic S_AXI_ARVALID;							//P15	-	Read Address Valid
 wire S_AXI_ARREADY;								//P16	-	Read Address Ready
 
 
 
-wire [C_S_AXI_ADDR_WIDTH*8-1:0] S_AXI_RDATA;		//P17	-	Read Data 
+wire [C_S_AXI_ADDR_WIDTH*8-1:0] S_AXI_RDATA;	//P17	-	Read Data 
 wire [1:0] S_AXI_RRESP;							//P18	-	Read Response (Faults/errors)
 wire S_AXI_RVALID;								//P19	-	Read Valid
 logic S_AXI_RREADY;								//P20	-	Read Ready
@@ -190,10 +190,13 @@ task read_word_uart;
 endtask
 */
 
-task read_word_from_AXU_UART();
 
-
-
+//assign S_AXI_ARVALID=0;
+task read_word_from_AXI_UART;
+	S_AXI_ARVALID<=1'b1;	//set valid
+	S_AXI_ARADDR<={14'd1,{18{1'b0}}};	
+	@(posedge S_AXI_ACLK);
+	S_AXI_ARVALID<=1'b0;
 endtask
 
 
@@ -220,6 +223,7 @@ end
 initial begin
 	RX<=1'b1;
 	Enable_rx<=1'b0;
+	S_AXI_ARADDR<=0;
 	S_AXI_ARESETN<=1'b1;
 	S_AXI_ARESETN<=1'b0;
 	@(posedge S_AXI_ACLK);
@@ -229,22 +233,28 @@ end
 initial begin
 	@(posedge S_AXI_ACLK);
 	@(posedge S_AXI_ACLK);
-//	for(int i=0;i<128;i=i+1) begin
-    transmit_word_to_uart(42);
-//	end
+	for(int i=0;i<128;i=i+1) begin
+	    transmit_word_to_uart(i+1);
+	end
 end
-/*
-always begin // Continually read when not empty
+
+logic debug_doing_read;
+
+initial begin // Continually read when not empty
+	debug_doing_read<=1'b0;
 	@(posedge S_AXI_ACLK);
+	repeat(100_000) @(posedge S_AXI_ACLK);
+	debug_doing_read<=1'b1;
+	$display("Read at %0t", $time);
+	read_word_from_AXI_UART;
 	@(posedge S_AXI_ACLK);
-	read_word_uart;
-	@(posedge S_AXI_ACLK);
+	debug_doing_read<=1'b0;
 end
-*/
+
 
 initial begin
-	repeat(100000) @(posedge S_AXI_ACLK);
-	$display("Testbench duration exhausted (100,000 clocks) ");
+	repeat(1_000_000) @(posedge S_AXI_ACLK);
+	$display("Testbench duration exhausted (10_000_000 clocks)");
 	$finish;
 end
 

@@ -1,31 +1,57 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Mon Mar 13 00:53:10 2023
+[*] Tue Mar 14 05:38:33 2023
 [*]
 [dumpfile] "/home/hakam/Repos/axil_UART_core/tb/axi_tb.vcd"
-[dumpfile_mtime] "Mon Mar 13 00:49:17 2023"
-[dumpfile_size] 3310337
+[dumpfile_mtime] "Tue Mar 14 05:38:27 2023"
+[dumpfile_size] 35225306
 [savefile] "/home/hakam/Repos/axil_UART_core/tb/AXI_UART_core_gtk.gtkw"
-[timestart] 0
+[timestart] 1999170000
 [size] 1920 1043
-[pos] -51 -51
-*-19.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -1 -1
+*-18.000000 2000030000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] axi_tb.
 [treeopen] axi_tb.AXI_UART.
+[treeopen] axi_tb.AXI_UART.UART.
 [sst_width] 296
-[signals_width] 207
+[signals_width] 422
 [sst_expanded] 1
-[sst_vpaned_height] 298
+[sst_vpaned_height] 318
 @200
 -TOP SIGNALS
 @28
 axi_tb.S_AXI_ACLK
 axi_tb.S_AXI_ARESETN
 @22
-axi_tb.S_AXI_ARADDR[3:0]
-@28
-axi_tb.S_AXI_ARVALID
+axi_tb.AXI_UART.S_AXI_RDATA[31:0]
+@29
+axi_tb.AXI_UART.S_AXI_RVALID
 @200
 -AXI_UART SIGNALS
+@28
+axi_tb.AXI_UART.UART.Clk
+axi_tb.AXI_UART.UART.Empty
+axi_tb.AXI_UART.UART.Enable_rx
+axi_tb.AXI_UART.UART.Enable_tx
+axi_tb.AXI_UART.UART.RX
+@22
+axi_tb.AXI_UART.S_AXI_ARADDR[31:0]
+axi_tb.AXI_UART.S_AXI_RDATA[31:0]
+@28
+axi_tb.AXI_UART.read_valid_buffer[0:3]
+axi_tb.AXI_UART.S_AXI_RVALID
+axi_tb.AXI_UART.UART.UART_bridge.baud_tick
+@200
+-RX MODULE SIGNALS
+@28
+axi_tb.AXI_UART.UART.UART_receive_controller.Clk
+axi_tb.AXI_UART.UART.UART_receive_controller.Resetn
+axi_tb.AXI_UART.UART.UART_receive_controller.RXC_state[1:0]
+@24
+axi_tb.AXI_UART.UART.UART_receive_controller.RX_data[7:0]
+@28
+axi_tb.AXI_UART.UART.UART_receive_controller.Empty
+axi_tb.AXI_UART.UART.UART_receive_controller.Unload_data
+axi_tb.debug_doing_read
 [pattern_trace] 1
 [pattern_trace] 0
